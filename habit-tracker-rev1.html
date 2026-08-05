@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Huel Habit Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #F5F2EC;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mobile-container {
+      width: 393px;
+      height: 90vh;
+      background: #fff;
+      border-radius: 32px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12), 0 2px 12px rgba(0,0,0,0.06);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
+    .screen.active { display: flex; }
+
+    .screen-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 28px 24px 24px;
+    }
+    .screen-scroll::-webkit-scrollbar { display: none; }
+
+    /* ── Bottom Nav ── */
+    .bottom-nav {
+      flex-shrink: 0;
+      width: 100%;
+      background: #fff;
+      border-top: 1px solid #ECECED;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      padding: 8px 4px 24px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 4px 10px;
+      flex: 1;
+    }
+    .nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+    .nav-item { color: #AEAEB2; }
+    .nav-item.active { color: #1C1C1E; }
+    .nav-label { font-size: 10px; font-weight: 500; color: inherit; white-space: nowrap; }
+
+    /* ── Floating log button ── */
+    #log-fab {
+      position: absolute;
+      bottom: 96px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 44px;
+      border-radius: 48px;
+      background: #4B4B4B;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 4px 4px 16px;
+      gap: 8px;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+    #log-fab:hover { opacity: 0.88; }
+
+    .fab-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+    }
+
+    .fab-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 1000px;
+      background: #C7F1C5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Shared ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #AEAEB2;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    .back-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid #E5E5EA;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .screen-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .screen-title { font-size: 20px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.4px; }
+
+    .cta {
+      width: 100%;
+      padding: 16px;
+      background: #1C1C1E;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.2px;
+    }
+    .cta:disabled { opacity: 0.25; cursor: not-allowed; }
+    .cta.secondary { background: #F5F2EC; color: #1C1C1E; margin-top: 10px; }
+
+    /* ════════════════════════
+       HOME — action-focused landing
+    ════════════════════════ */
+    .home-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .home-header h1 { font-size: 22px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+    .home-header p { font-size: 13px; color: #AEAEB2; margin-top: 2px; }
+
+    /* Streak nudge — compact, links to Tracker */
+    .streak-nudge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1C1C1E;
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: opacity 0.12s;
+    }
+    .streak-nudge:hover { opacity: 0.9; }
+    .streak-nudge-left { display: flex; align-items: center; gap: 10px; }
+    .streak-nudge-flame { font-size: 20px; }
+    .streak-nudge-text { font-size: 14px; font-weight: 600; color: #fff; }
+    .streak-nudge-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+    .streak-nudge-right { font-size: 11px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 3px; }
+
+    /* Log CTA — primary action */
+    .log-cta-card {
+      background: #F5F2EC;
+      border-radius: 20px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .log-cta-card:hover { background: #EDE9E1; }
+    .log-cta-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .log-cta-title { font-size: 20px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.4px; }
+    .log-cta-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #1C1C1E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .log-cta-sub { font-size: 14px; color: #8E8E93; line-height: 1.5; }
+
+    /* Quick log options */
+    .quick-log-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 28px;
+    }
+    .quick-log-row::-webkit-scrollbar { display: none; }
+
+    .quick-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 14px;
+      background: #F5F2EC;
+      border-radius: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.12s;
+      border: 1.5px solid transparent;
+    }
+    .quick-slot:hover { background: #EDE9E1; }
+    .quick-slot.logged { background: #F0FDF4; border-color: #BBF7D0; }
+
+    .quick-slot-emoji { font-size: 18px; }
+    .quick-slot-label { font-size: 11px; font-weight: 600; color: #1C1C1E; }
+    .quick-slot-status { font-size: 10px; color: #AEAEB2; }
+    .quick-slot.logged .quick-slot-status { color: #16A34A; }
+
+    /* ════════════════════════
+       TRACKER — habit dashboard
+    ════════════════════════ */
+    .tracker-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .tracker-header h1 { font-size: 22px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+    .tracker-header p { font-size: 13px; color: #AEAEB2; margin-top: 2px; }
+
+    /* Streak card — large, tappable to sub-page */
+    .streak-card {
+      background: #1C1C1E;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: opacity 0.12s;
+    }
+    .streak-card:hover { opacity: 0.92; }
+    .streak-main { display: flex; flex-direction: column; gap: 3px; }
+    .streak-number { font-size: 52px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -2px; }
+    .streak-sub { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; }
+    .streak-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .streak-best-val { font-size: 22px; font-weight: 700; color: #fff; }
+    .streak-best-label { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .streak-history-hint { font-size: 11px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 3px; }
+
+    /* Log CTA (tracker version — secondary) */
+    .tracker-log-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: #F5F2EC;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .tracker-log-cta:hover { background: #EDE9E1; }
+    .tracker-log-cta-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #1C1C1E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .tracker-log-cta-text { flex: 1; }
+    .tracker-log-cta-title { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+    .tracker-log-cta-sub { font-size: 12px; color: #AEAEB2; margin-top: 1px; }
+
+    /* Expandable logged cards */
+    .logged-slots { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+
+    .logged-card { border-radius: 16px; border: 1.5px solid #BBF7D0; background: #F0FDF4; overflow: hidden; }
+
+    .logged-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .slot-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #D1FAE5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .logged-card-info { flex: 1; }
+    .logged-card-name { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+    .logged-card-meta { font-size: 12px; color: #16A34A; margin-top: 2px; }
+    .logged-card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .entry-count {
+      font-size: 11px;
+      font-weight: 700;
+      color: #16A34A;
+      background: #D1FAE5;
+      border-radius: 20px;
+      padding: 3px 8px;
+    }
+
+    .chevron { transition: transform 0.2s ease; }
+    .logged-card.open .chevron { transform: rotate(180deg); }
+
+    .logged-card-body { display: none; flex-direction: column; border-top: 1px solid #BBF7D0; }
+    .logged-card.open .logged-card-body { display: flex; }
+
+    .entry-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      border-bottom: 1px solid #D1FAE5;
+    }
+    .entry-dot { width: 8px; height: 8px; border-radius: 50%; background: #16A34A; flex-shrink: 0; }
+    .entry-info { flex: 1; }
+    .entry-product { font-size: 13px; font-weight: 600; color: #1C1C1E; }
+    .entry-time { font-size: 11px; color: #AEAEB2; margin-top: 1px; }
+
+    .add-another-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+    }
+    .add-another-row:hover { background: #E8FDF0; }
+    .add-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px dashed #16A34A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .add-another-label { font-size: 13px; font-weight: 600; color: #16A34A; }
+
+    /* View history row */
+    .view-history-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #F5F2EC;
+      border-radius: 14px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      transition: background 0.12s;
+    }
+    .view-history-row:hover { background: #EDE9E1; }
+    .view-history-label { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+    .view-history-sub { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+
+    /* Badge chips */
+    .badges-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+    .badges-row::-webkit-scrollbar { display: none; }
+    .badge-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: #F5F2EC;
+      border-radius: 20px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .badge-chip:hover { background: #EDE9E1; }
+    .badge-chip-name { font-size: 12px; font-weight: 600; color: #1C1C1E; }
+
+    /* ════════════════════════
+       TRACKER DETAIL — history + badges sub-page
+    ════════════════════════ */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .stat-tile { background: #F5F2EC; border-radius: 14px; padding: 14px 10px; text-align: center; }
+    .stat-num { font-size: 24px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.5px; }
+    .stat-lbl { font-size: 11px; color: #AEAEB2; margin-top: 2px; }
+
+    .month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .month-label { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+    .month-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid #E5E5EA;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 16px; }
+    .cal-hdr { text-align: center; font-size: 11px; font-weight: 600; color: #AEAEB2; padding: 4px 0 6px; }
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1C1C1E;
+    }
+    .cal-day.empty { cursor: default; }
+    .cal-day.future { color: #D1D1D6; }
+    .cal-day.today { background: #1C1C1E; color: #fff; font-weight: 700; }
+    .cal-day.logged { background: #D1FAE5; color: #15803D; font-weight: 700; }
+
+    .cal-legend { display: flex; gap: 16px; margin-bottom: 24px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .legend-label { font-size: 11px; color: #AEAEB2; }
+
+    .section-divider { height: 1px; background: #F0F0F0; margin: 4px 0 24px; }
+
+    .badges-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+    .badge-tile {
+      background: #F5F2EC;
+      border-radius: 16px;
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .badge-tile:hover { background: #EDE9E1; }
+    .badge-tile.locked { opacity: 0.35; cursor: default; }
+    .badge-tile.locked:hover { background: #F5F2EC; }
+    .badge-emoji-wrap {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .badge-tile-name { font-size: 11px; font-weight: 600; color: #1C1C1E; line-height: 1.3; }
+    .badge-tile-status { font-size: 10px; color: #AEAEB2; }
+
+    /* ════════════════════════
+       LOG FLOW
+    ════════════════════════ */
+    .log-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .log-heading { font-size: 20px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.4px; }
+    .step-hint { font-size: 13px; color: #AEAEB2; margin-bottom: 24px; }
+
+    .slot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+
+    .slot-option {
+      padding: 20px 16px;
+      border-radius: 16px;
+      border: 1.5px solid #E5E5EA;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.12s;
+    }
+    .slot-option:hover { border-color: #C7C7CC; }
+    .slot-option.selected { background: #1C1C1E; border-color: #1C1C1E; }
+    .slot-option-emoji { font-size: 22px; }
+    .slot-option-name { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+    .slot-option-time { font-size: 11px; color: #AEAEB2; }
+    .slot-option.selected .slot-option-name { color: #fff; }
+    .slot-option.selected .slot-option-time { color: rgba(255,255,255,0.5); }
+
+    .product-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+
+    .product-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1.5px solid #E5E5EA;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .product-card:hover { border-color: #C7C7CC; }
+    .product-card.selected { border-color: #1C1C1E; background: #FAFAFA; }
+    .product-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #F5F2EC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .product-info { flex: 1; }
+    .product-name { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+    .product-radio {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid #E5E5EA;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .product-card.selected .product-radio { background: #1C1C1E; border-color: #1C1C1E; }
+    .product-card.selected .product-radio::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    /* ════════════════════════
+       LOG SUCCESS
+    ════════════════════════ */
+    .success-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .success-icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #D1FAE5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    .success-title { font-size: 26px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.6px; margin-bottom: 8px; }
+    .success-sub { font-size: 14px; color: #AEAEB2; line-height: 1.6; margin-bottom: 28px; }
+    .log-summary {
+      background: #F5F2EC;
+      border-radius: 16px;
+      padding: 16px;
+      width: 100%;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+    .summary-row { display: flex; justify-content: space-between; font-size: 14px; }
+    .summary-row + .summary-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid #E5E5EA; }
+    .summary-key { color: #AEAEB2; }
+    .summary-val { font-weight: 600; color: #1C1C1E; }
+
+    /* ════════════════════════
+       SUBSCRIPTIONS
+    ════════════════════════ */
+    .subs-header { margin-bottom: 24px; }
+    .subs-title { font-size: 22px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+    .subs-sub { font-size: 13px; color: #AEAEB2; margin-top: 4px; }
+
+    .sub-card { border: 1.5px solid #E5E5EA; border-radius: 20px; padding: 18px; margin-bottom: 12px; }
+    .sub-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .sub-product-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #F5F2EC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .sub-product-info { flex: 1; }
+    .sub-product-name { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+    .sub-product-detail { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+    .sub-status-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; background: #D1FAE5; color: #16A34A; }
+    .sub-meta-row { display: flex; justify-content: space-between; font-size: 13px; padding-top: 14px; border-top: 1px solid #F0F0F0; }
+    .sub-meta-key { color: #AEAEB2; }
+    .sub-meta-val { font-weight: 600; color: #1C1C1E; }
+    .sub-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .sub-action-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1.5px solid #E5E5EA;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1C1C1E;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.12s;
+    }
+    .sub-action-btn:hover { background: #F5F2EC; }
+
+    /* ════════════════════════
+       PROFILE
+    ════════════════════════ */
+    .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #1C1C1E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .profile-name { font-size: 18px; font-weight: 700; color: #1C1C1E; }
+    .profile-email { font-size: 13px; color: #AEAEB2; margin-top: 2px; }
+    .settings-group { margin-bottom: 24px; }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #F0F0F0;
+      cursor: pointer;
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row-label { font-size: 15px; color: #1C1C1E; }
+    .settings-row-value { font-size: 13px; color: #AEAEB2; display: flex; align-items: center; gap: 6px; }
+
+    /* ════════════════════════
+       BADGE MODAL
+    ════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      border-radius: 32px;
+      align-items: flex-end;
+    }
+    .modal-overlay.visible { display: flex; }
+    .modal-sheet {
+      width: 100%;
+      background: #fff;
+      border-radius: 28px 28px 0 0;
+      padding: 36px 28px 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    .modal-badge-icon {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: #FEF3C7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+    .modal-earned-tag { font-size: 11px; font-weight: 700; color: #D97706; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .modal-badge-name { font-size: 26px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.6px; margin-bottom: 8px; }
+    .modal-badge-desc { font-size: 14px; color: #AEAEB2; line-height: 1.6; margin-bottom: 28px; }
+  </style>
+</head>
+<body>
+<div class="mobile-container" id="app">
+
+  <!-- ══════════════════════════════
+       HOME
+  ══════════════════════════════ -->
+  <div id="screen-home" class="screen active">
+    <div class="screen-scroll">
+
+      <div class="home-header">
+        <div>
+          <h1>Good morning, Alex 👋</h1>
+          <p>Wednesday, 5 August 2026</p>
+        </div>
+      </div>
+
+      <div class="streak-nudge" onclick="showScreen('tracker')">
+        <div class="streak-nudge-left">
+          <span class="streak-nudge-flame">🔥</span>
+          <div>
+            <div class="streak-nudge-text">14 day streak</div>
+            <div class="streak-nudge-sub">Best ever: 21 days</div>
+          </div>
+        </div>
+        <div class="streak-nudge-right">
+          View tracker
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M4.5 2.5L8 6L4.5 9.5" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       TRACKER — habit dashboard
+  ══════════════════════════════ -->
+  <div id="screen-tracker" class="screen">
+    <div class="screen-scroll">
+
+      <div class="tracker-header">
+        <div>
+          <h1>Tracker</h1>
+          <p>Tuesday, 4 August 2026</p>
+        </div>
+      </div>
+
+      <!-- Full streak card → sub-page -->
+      <div class="streak-card" onclick="showScreen('tracker-detail')">
+        <div class="streak-main">
+          <div class="streak-number">14</div>
+          <div class="streak-sub">Day streak 🔥</div>
+        </div>
+        <div class="streak-right">
+          <div>
+            <div class="streak-best-val">21</div>
+            <div class="streak-best-label">Best streak</div>
+          </div>
+          <div class="streak-history-hint">
+            Full history
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M4.5 2.5L8 6L4.5 9.5" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's logged entries -->
+      <div class="section-label">Logged today</div>
+      <div class="logged-slots" id="logged-slots-container"></div>
+
+      <!-- View history + badges row -->
+      <div class="view-history-row" onclick="showScreen('tracker-detail')">
+        <div>
+          <div class="view-history-label">History & badges</div>
+          <div class="view-history-sub">Calendar, streaks and your badge collection</div>
+        </div>
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
+          <path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <!-- Recent badges teaser -->
+      <div style="margin-top:16px">
+        <div class="section-label">Recent badges</div>
+        <div class="badges-row">
+          <div class="badge-chip" onclick="showScreen('tracker-detail')">
+            <span>🌱</span><span class="badge-chip-name">First Sip</span>
+          </div>
+          <div class="badge-chip" onclick="showScreen('tracker-detail')">
+            <span>🐦</span><span class="badge-chip-name">Early Bird</span>
+          </div>
+          <div class="badge-chip" onclick="showScreen('tracker-detail')">
+            <span>⚡</span><span class="badge-chip-name">Week Warrior</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       TRACKER DETAIL — history + badges sub-page
+  ══════════════════════════════ -->
+  <div id="screen-tracker-detail" class="screen">
+    <div class="screen-scroll">
+
+      <div class="screen-header">
+        <div class="back-btn" onclick="showScreen('tracker')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M9 2L4 7L9 12" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="screen-title">History & badges</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-tile">
+          <div class="stat-num">14</div>
+          <div class="stat-lbl">Day streak</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-num">21</div>
+          <div class="stat-lbl">Best streak</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-num">38</div>
+          <div class="stat-lbl">Total logs</div>
+        </div>
+      </div>
+
+      <div class="month-nav">
+        <div class="month-btn">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6L6 11" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="month-label">August 2026</div>
+        <div class="month-btn">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <div class="cal-grid">
+        <div class="cal-hdr">Mo</div><div class="cal-hdr">Tu</div><div class="cal-hdr">We</div>
+        <div class="cal-hdr">Th</div><div class="cal-hdr">Fr</div><div class="cal-hdr">Sa</div>
+        <div class="cal-hdr">Su</div>
+
+        <div class="cal-day empty"></div><div class="cal-day empty"></div>
+        <div class="cal-day empty"></div><div class="cal-day empty"></div>
+        <div class="cal-day empty"></div>
+        <div class="cal-day logged">1</div><div class="cal-day logged">2</div>
+
+        <div class="cal-day logged">3</div><div class="cal-day today">4</div>
+        <div class="cal-day future">5</div><div class="cal-day future">6</div>
+        <div class="cal-day future">7</div><div class="cal-day future">8</div>
+        <div class="cal-day future">9</div>
+
+        <div class="cal-day future">10</div><div class="cal-day future">11</div>
+        <div class="cal-day future">12</div><div class="cal-day future">13</div>
+        <div class="cal-day future">14</div><div class="cal-day future">15</div>
+        <div class="cal-day future">16</div>
+
+        <div class="cal-day future">17</div><div class="cal-day future">18</div>
+        <div class="cal-day future">19</div><div class="cal-day future">20</div>
+        <div class="cal-day future">21</div><div class="cal-day future">22</div>
+        <div class="cal-day future">23</div>
+
+        <div class="cal-day future">24</div><div class="cal-day future">25</div>
+        <div class="cal-day future">26</div><div class="cal-day future">27</div>
+        <div class="cal-day future">28</div><div class="cal-day future">29</div>
+        <div class="cal-day future">30</div>
+
+        <div class="cal-day future">31</div>
+      </div>
+
+      <div class="cal-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#D1FAE5"></div>
+          <span class="legend-label">Logged</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#1C1C1E"></div>
+          <span class="legend-label">Today</span>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section-label">Badges</div>
+
+      <div class="badges-grid">
+        <div class="badge-tile" onclick="openBadgeModal('🌱','First Sip','You logged your very first Huel. The journey starts here.')">
+          <div class="badge-emoji-wrap">🌱</div>
+          <div class="badge-tile-name">First Sip</div>
+          <div class="badge-tile-status">Earned</div>
+        </div>
+        <div class="badge-tile" onclick="openBadgeModal('🐦','Early Bird','You logged breakfast 7 days in a row. Mornings are sorted.')">
+          <div class="badge-emoji-wrap">🐦</div>
+          <div class="badge-tile-name">Early Bird</div>
+          <div class="badge-tile-status">Earned</div>
+        </div>
+        <div class="badge-tile" onclick="openBadgeModal('⚡','Week Warrior','You logged every day this week. Total consistency.')">
+          <div class="badge-emoji-wrap">⚡</div>
+          <div class="badge-tile-name">Week Warrior</div>
+          <div class="badge-tile-status">Earned</div>
+        </div>
+        <div class="badge-tile locked">
+          <div class="badge-emoji-wrap">🏆</div>
+          <div class="badge-tile-name">Lunch Time Hero</div>
+          <div class="badge-tile-status">9 / 14 lunches</div>
+        </div>
+        <div class="badge-tile locked">
+          <div class="badge-emoji-wrap">🔥</div>
+          <div class="badge-tile-name">On Fire</div>
+          <div class="badge-tile-status">14 / 30 days</div>
+        </div>
+        <div class="badge-tile locked">
+          <div class="badge-emoji-wrap">🌙</div>
+          <div class="badge-tile-name">Night Owl</div>
+          <div class="badge-tile-status">3 / 10 dinners</div>
+        </div>
+        <div class="badge-tile locked">
+          <div class="badge-emoji-wrap">🍫</div>
+          <div class="badge-tile-name">Snack Master</div>
+          <div class="badge-tile-status">5 / 10 snacks</div>
+        </div>
+        <div class="badge-tile locked">
+          <div class="badge-emoji-wrap">🎯</div>
+          <div class="badge-tile-name">The Consistent</div>
+          <div class="badge-tile-status">14 / 30 days</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       LOG — STEP 1
+  ══════════════════════════════ -->
+  <div id="screen-log-1" class="screen">
+    <div class="screen-scroll">
+      <div class="log-nav">
+        <div class="back-btn" onclick="showScreen('home')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="log-heading">Log a Huel</div>
+      </div>
+      <div class="step-hint">Step 1 of 2 — Which meal?</div>
+
+      <div class="slot-grid">
+        <div class="slot-option" data-slot="breakfast" onclick="selectSlot(this,'breakfast')">
+          <span class="slot-option-emoji">🌅</span>
+          <div class="slot-option-name">Breakfast</div>
+          <div class="slot-option-time">6am – 10am</div>
+        </div>
+        <div class="slot-option" data-slot="lunch" onclick="selectSlot(this,'lunch')">
+          <span class="slot-option-emoji">☀️</span>
+          <div class="slot-option-name">Lunch</div>
+          <div class="slot-option-time">11am – 2pm</div>
+        </div>
+        <div class="slot-option" data-slot="dinner" onclick="selectSlot(this,'dinner')">
+          <span class="slot-option-emoji">🌙</span>
+          <div class="slot-option-name">Dinner</div>
+          <div class="slot-option-time">5pm – 9pm</div>
+        </div>
+        <div class="slot-option" data-slot="snack" onclick="selectSlot(this,'snack')">
+          <span class="slot-option-emoji">⚡️</span>
+          <div class="slot-option-name">Snack</div>
+          <div class="slot-option-time">Any time</div>
+        </div>
+      </div>
+
+      <button class="cta" id="slot-next-btn" disabled onclick="goToStep2()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       LOG — STEP 2
+  ══════════════════════════════ -->
+  <div id="screen-log-2" class="screen">
+    <div class="screen-scroll">
+      <div class="log-nav">
+        <div class="back-btn" onclick="showScreen('log-1')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="log-heading">Choose product</div>
+      </div>
+      <div class="step-hint">Step 2 of 2 — What did you have?</div>
+
+      <div class="section-label">Your products</div>
+      <div class="product-list">
+        <div class="product-card" onclick="selectProduct(this,'rtd','Ready-to-Drink')">
+          <div class="product-thumb">🥤</div>
+          <div class="product-info"><div class="product-name">Ready-to-Drink</div></div>
+          <div class="product-radio"></div>
+        </div>
+        <div class="product-card" onclick="selectProduct(this,'black','Huel Black Edition')">
+          <div class="product-thumb">⚫</div>
+          <div class="product-info"><div class="product-name">Huel Black Edition</div></div>
+          <div class="product-radio"></div>
+        </div>
+        <div class="product-card" onclick="selectProduct(this,'hs','Hot & Savoury')">
+          <div class="product-thumb">🍲</div>
+          <div class="product-info"><div class="product-name">Hot & Savoury</div></div>
+          <div class="product-radio"></div>
+        </div>
+        <div class="product-card" onclick="selectProduct(this,'bar','Huel Bar')">
+          <div class="product-thumb">🍫</div>
+          <div class="product-info"><div class="product-name">Huel Bar</div></div>
+          <div class="product-radio"></div>
+        </div>
+      </div>
+
+      <button class="cta" id="product-log-btn" disabled onclick="confirmLog()">Log it ✓</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       LOG SUCCESS
+  ══════════════════════════════ -->
+  <div id="screen-log-success" class="screen">
+    <div class="success-wrap">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Logged!</div>
+      <div class="success-sub" id="success-sub">Your meal has been logged.<br>Keep the streak going 🔥</div>
+      <div class="log-summary">
+        <div class="summary-row"><span class="summary-key">Meal</span><span class="summary-val" id="sum-meal">—</span></div>
+        <div class="summary-row"><span class="summary-key">Product</span><span class="summary-val" id="sum-product">—</span></div>
+        <div class="summary-row"><span class="summary-key">Current streak</span><span class="summary-val">14 days 🔥</span></div>
+      </div>
+      <button class="cta" onclick="showScreen('home')">Back to home</button>
+      <button class="cta secondary" onclick="showScreen('tracker')">View tracker</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SUBSCRIPTIONS
+  ══════════════════════════════ -->
+  <div id="screen-subscriptions" class="screen">
+    <div class="screen-scroll">
+      <div class="subs-header">
+        <div class="subs-title">Subscriptions</div>
+        <div class="subs-sub">2 active</div>
+      </div>
+      <div class="sub-card">
+        <div class="sub-card-top">
+          <div class="sub-product-thumb">⚫</div>
+          <div class="sub-product-info">
+            <div class="sub-product-name">Huel Black Edition</div>
+            <div class="sub-product-detail">2 bags/month</div>
+          </div>
+          <div class="sub-status-pill">Active</div>
+        </div>
+        <div class="sub-meta-row">
+          <span class="sub-meta-key">Next delivery</span>
+          <span class="sub-meta-val">18 Aug 2026</span>
+        </div>
+        <div class="sub-actions">
+          <button class="sub-action-btn">Edit</button>
+          <button class="sub-action-btn">Skip next</button>
+          <button class="sub-action-btn" style="color:#E5373A;border-color:#FECDD3">Cancel</button>
+        </div>
+      </div>
+      <div class="sub-card">
+        <div class="sub-card-top">
+          <div class="sub-product-thumb">🥤</div>
+          <div class="sub-product-info">
+            <div class="sub-product-name">Ready-to-Drink</div>
+            <div class="sub-product-detail">12 bottles/month</div>
+          </div>
+          <div class="sub-status-pill">Active</div>
+        </div>
+        <div class="sub-meta-row">
+          <span class="sub-meta-key">Next delivery</span>
+          <span class="sub-meta-val">22 Aug 2026</span>
+        </div>
+        <div class="sub-actions">
+          <button class="sub-action-btn">Edit</button>
+          <button class="sub-action-btn">Skip next</button>
+          <button class="sub-action-btn" style="color:#E5373A;border-color:#FECDD3">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PROFILE
+  ══════════════════════════════ -->
+  <div id="screen-profile" class="screen">
+    <div class="screen-scroll">
+      <div class="profile-header">
+        <div class="profile-avatar">A</div>
+        <div>
+          <div class="profile-name">Alex Woodward</div>
+          <div class="profile-email">alex@huel.com</div>
+        </div>
+      </div>
+      <div class="section-label">Account</div>
+      <div class="settings-group">
+        <div class="settings-row"><span class="settings-row-label">Personal details</span><span class="settings-row-value"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="settings-row"><span class="settings-row-label">Notifications</span><span class="settings-row-value">On <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="settings-row"><span class="settings-row-label">Reminders</span><span class="settings-row-value">Off <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+      <div class="section-label">Preferences</div>
+      <div class="settings-group">
+        <div class="settings-row"><span class="settings-row-label">Dietary goals</span><span class="settings-row-value"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="settings-row"><span class="settings-row-label">Units</span><span class="settings-row-value">Metric <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+      <div class="section-label">Support</div>
+      <div class="settings-group">
+        <div class="settings-row"><span class="settings-row-label">Help centre</span><span class="settings-row-value"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="settings-row"><span class="settings-row-label" style="color:#E5373A">Sign out</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       BADGE MODAL
+  ══════════════════════════════ -->
+  <div id="badge-modal" class="modal-overlay" onclick="handleModalClick(event)">
+    <div class="modal-sheet">
+      <div class="modal-badge-icon" id="modal-emoji">🏆</div>
+      <div class="modal-earned-tag">Badge unlocked!</div>
+      <div class="modal-badge-name" id="modal-name">Lunch Time Hero</div>
+      <div class="modal-badge-desc" id="modal-desc">You've logged lunch 14 days in a row.</div>
+      <button class="cta" onclick="closeBadgeModal()">Awesome! 🎉</button>
+    </div>
+  </div>
+
+  <!-- Floating log button — visible on Home and Tracker only -->
+  <button id="log-fab" onclick="showScreen('log-1')">
+    <span class="fab-label">Log a meal</span>
+    <div class="fab-circle">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 4V16M4 10H16" stroke="#1C1C1E" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </button>
+
+  <!-- ══════════════════════════════
+       BOTTOM NAV — Home · Tracker · Subscriptions · Profile
+  ══════════════════════════════ -->
+  <nav class="bottom-nav">
+
+    <div class="nav-item active" id="nav-home" onclick="showScreen('home')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M2 10L11 2L20 10V20H14V14H8V20H2V10Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <span class="nav-label">Home</span>
+    </div>
+
+    <div class="nav-item" id="nav-tracker" onclick="showScreen('tracker')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M11 6V11L14 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Tracker</span>
+    </div>
+
+    <div class="nav-item" id="nav-subscriptions" onclick="showScreen('subscriptions')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <rect x="2" y="6" width="18" height="13" rx="3" fill="currentColor"/>
+          <path d="M6 6V5C6 3.343 7.343 2 9 2H13C14.657 2 16 3.343 16 5V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M7 13H15M7 16H11" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Subscriptions</span>
+    </div>
+
+    <div class="nav-item" id="nav-profile" onclick="showScreen('profile')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="8" r="4" fill="currentColor"/>
+          <path d="M3 20C3 16.686 6.686 14 11 14C15.314 14 19 16.686 19 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Profile</span>
+    </div>
+
+  </nav>
+
+</div>
+
+<script>
+  const NAV_MAP = {
+    'home':            'nav-home',
+    'log-1':           'nav-home',
+    'log-2':           'nav-home',
+    'log-success':     'nav-home',
+    'tracker':         'nav-tracker',
+    'tracker-detail':  'nav-tracker',
+    'subscriptions':   'nav-subscriptions',
+    'profile':         'nav-profile',
+  };
+
+  let pickedSlot = null;
+  let pickedProductName = null;
+  const SLOT_LABELS = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' };
+
+  const SLOT_META = {
+    breakfast: { emoji: '🌅', label: 'Breakfast' },
+    lunch:     { emoji: '☀️', label: 'Lunch' },
+    dinner:    { emoji: '🌙', label: 'Dinner' },
+    snack:     { emoji: '⚡️', label: 'Snack' }
+  };
+  const SLOT_ORDER = ['breakfast', 'lunch', 'dinner', 'snack'];
+
+  // Today's logged meals — seeded with demo data
+  const todaysMeals = {
+    breakfast: [{ product: 'Huel Black Edition', time: '8:12am' }],
+    snack: [
+      { product: 'Huel Bar', time: '10:45am' },
+      { product: 'Ready-to-Drink', time: '3:20pm' }
+    ]
+  };
+  const openSlots = new Set(['snack']);
+
+  function nowTime() {
+    const d = new Date();
+    let h = d.getHours();
+    const m = String(d.getMinutes()).padStart(2, '0');
+    const ampm = h >= 12 ? 'pm' : 'am';
+    h = h % 12 || 12;
+    return `${h}:${m}${ampm}`;
+  }
+
+  function renderMeals() {
+    const container = document.getElementById('logged-slots-container');
+    const logged = SLOT_ORDER.filter(s => todaysMeals[s]);
+    if (logged.length === 0) {
+      container.innerHTML = `<div style="text-align:center;padding:32px 0;color:#AEAEB2;font-size:14px;">Nothing logged yet today</div>`;
+      return;
+    }
+    container.innerHTML = logged.map(slot => {
+      const entries = todaysMeals[slot];
+      const meta = SLOT_META[slot];
+      const isOpen = openSlots.has(slot);
+      const multi = entries.length > 1;
+      const summary = multi ? `${entries.length} logged today` : `${entries[0].product} — ${entries[0].time}`;
+      return `
+        <div class="logged-card${isOpen ? ' open' : ''}" id="card-${slot}">
+          <div class="logged-card-header" onclick="toggleCard('${slot}')">
+            <div class="slot-icon">${meta.emoji}</div>
+            <div class="logged-card-info">
+              <div class="logged-card-name">${meta.label}</div>
+              <div class="logged-card-meta">${summary}</div>
+            </div>
+            <div class="logged-card-right">
+              ${multi ? `<span class="entry-count">×${entries.length}</span>` : ''}
+              <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 6L8 11L13 6" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="logged-card-body">
+            ${entries.map(e => `
+              <div class="entry-row">
+                <div class="entry-dot"></div>
+                <div class="entry-info">
+                  <div class="entry-product">${e.product}</div>
+                  <div class="entry-time">${e.time}</div>
+                </div>
+              </div>`).join('')}
+            <div class="add-another-row" onclick="startLog('${slot}')">
+              <div class="add-icon">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M6 1V11M1 6H11" stroke="#16A34A" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="add-another-label">Add another</div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  const FAB_SCREENS = new Set(['home', 'tracker']);
+
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const navId = NAV_MAP[name];
+    if (navId) document.getElementById(navId).classList.add('active');
+    document.getElementById('log-fab').style.display = FAB_SCREENS.has(name) ? 'flex' : 'none';
+  }
+
+  function toggleCard(slot) {
+    if (openSlots.has(slot)) openSlots.delete(slot);
+    else openSlots.add(slot);
+    renderMeals();
+  }
+
+  function startLog(slot) {
+    pickedSlot = slot;
+    document.querySelectorAll('.slot-option').forEach(el => el.classList.remove('selected'));
+    const tile = document.querySelector(`.slot-option[data-slot="${slot}"]`);
+    if (tile) tile.classList.add('selected');
+    document.getElementById('slot-next-btn').disabled = false;
+    showScreen('log-1');
+  }
+
+  function selectSlot(el, slot) {
+    document.querySelectorAll('.slot-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    pickedSlot = slot;
+    document.getElementById('slot-next-btn').disabled = false;
+  }
+
+  function goToStep2() {
+    pickedProductName = null;
+    document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('product-log-btn').disabled = true;
+    showScreen('log-2');
+  }
+
+  function selectProduct(el, id, name) {
+    document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    pickedProductName = name;
+    document.getElementById('product-log-btn').disabled = false;
+  }
+
+  function confirmLog() {
+    const slotLabel = SLOT_LABELS[pickedSlot] || 'Meal';
+
+    // Write to state and re-render tracker
+    if (!todaysMeals[pickedSlot]) todaysMeals[pickedSlot] = [];
+    todaysMeals[pickedSlot].push({ product: pickedProductName || 'Huel', time: nowTime() });
+    openSlots.add(pickedSlot);
+    renderMeals();
+
+    document.getElementById('sum-meal').textContent = slotLabel;
+    document.getElementById('sum-product').textContent = pickedProductName || '—';
+    document.getElementById('success-sub').innerHTML =
+      `Your ${slotLabel.toLowerCase()} has been logged.<br>Keep the streak going 🔥`;
+    showScreen('log-success');
+    if (pickedSlot === 'lunch') {
+      setTimeout(() => openBadgeModal('🏆', 'Lunch Time Hero',
+        'You\'ve logged lunch 14 days in a row. The lunchtime habit is locked in.'), 900);
+    }
+  }
+
+  function openBadgeModal(emoji, name, desc) {
+    document.getElementById('modal-emoji').textContent = emoji;
+    document.getElementById('modal-name').textContent = name;
+    document.getElementById('modal-desc').textContent = desc;
+    document.getElementById('badge-modal').classList.add('visible');
+  }
+
+  function closeBadgeModal() {
+    document.getElementById('badge-modal').classList.remove('visible');
+  }
+
+  function handleModalClick(e) {
+    if (e.target === document.getElementById('badge-modal')) closeBadgeModal();
+  }
+
+  renderMeals();
+</script>
+</body>
+</html>
