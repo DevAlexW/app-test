@@ -1,6 +1,201 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta http-equiv="refresh" content="0; url=habit-tracker-rev1.html">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Huel App — Prototypes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F5F5F0;
+      color: #1C1C1E;
+      min-height: 100vh;
+      padding: 48px 24px 80px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 48px;
+    }
+
+    .wordmark {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #1C1C1E;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #6B6B6B;
+    }
+
+    .category {
+      margin-bottom: 40px;
+    }
+
+    .category-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #AEAEB2;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #E5E5E0;
+    }
+
+    .prototype-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .prototype-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid #E5E5E0;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .prototype-card:hover {
+      border-color: #1C1C1E;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .card-left {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: #6B6B6B;
+    }
+
+    .card-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .card-tag {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 100px;
+      background: #F0FDF0;
+      color: #16A34A;
+    }
+
+    .card-tag.wip {
+      background: #FFF7ED;
+      color: #C2410C;
+    }
+
+    .card-tag.draft {
+      background: #F5F5F5;
+      color: #6B6B6B;
+    }
+
+    .arrow {
+      color: #AEAEB2;
+      font-size: 16px;
+    }
+
+    .empty-category {
+      font-size: 13px;
+      color: #AEAEB2;
+      padding: 14px 0;
+    }
+
+    footer {
+      margin-top: 56px;
+      font-size: 12px;
+      color: #AEAEB2;
+    }
+  </style>
 </head>
+<body>
+  <div class="container">
+    <header>
+      <div class="wordmark">Huel</div>
+      <h1>App Prototypes</h1>
+      <div class="subtitle">Internal wireframes and interactive prototypes</div>
+    </header>
+
+    <!-- Habit Tracking -->
+    <div class="category">
+      <div class="category-title">Habit Tracking</div>
+      <div class="prototype-list">
+        <a class="prototype-card" href="habit-tracker-rev1.html">
+          <div class="card-left">
+            <div class="card-name">Habit Tracker — Rev 1</div>
+            <div class="card-desc">Meal logging, streaks, badges, daily tracker</div>
+          </div>
+          <div class="card-right">
+            <span class="card-tag">Live</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Subscription Management -->
+    <div class="category">
+      <div class="category-title">Subscription Management</div>
+      <div class="prototype-list">
+        <div class="empty-category">No prototypes yet</div>
+      </div>
+    </div>
+
+    <!-- Profile -->
+    <div class="category">
+      <div class="category-title">Profile</div>
+      <div class="prototype-list">
+        <div class="empty-category">No prototypes yet</div>
+      </div>
+    </div>
+
+    <!-- Onboarding -->
+    <div class="category">
+      <div class="category-title">Onboarding</div>
+      <div class="prototype-list">
+        <div class="empty-category">No prototypes yet</div>
+      </div>
+    </div>
+
+    <footer>Huel internal use only</footer>
+  </div>
+</body>
 </html>
