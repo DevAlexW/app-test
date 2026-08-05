@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Huel Habit Tracker — Rev 3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #F5F2EC;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mobile-container {
+      width: 393px;
+      height: 90vh;
+      background: #fff;
+      border-radius: 32px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12), 0 2px 12px rgba(0,0,0,0.06);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
+    .screen.active { display: flex; }
+
+    .screen-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 28px 24px 24px;
+    }
+    .screen-scroll::-webkit-scrollbar { display: none; }
+
+    /* ── Bottom Nav ── */
+    .bottom-nav {
+      flex-shrink: 0;
+      width: 100%;
+      background: #fff;
+      border-top: 1px solid #ECECED;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      padding: 8px 4px 24px;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 10px; flex: 1; color: #AEAEB2; }
+    .nav-item.active { color: #1C1C1E; }
+    .nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+    .nav-label { font-size: 10px; font-weight: 500; color: inherit; white-space: nowrap; }
+
+    /* ── FAB ── */
+    #log-fab {
+      position: absolute;
+      bottom: 96px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 44px;
+      border-radius: 48px;
+      background: #4B4B4B;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 4px 4px 16px;
+      gap: 8px;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+    #log-fab:hover { opacity: 0.88; }
+    .fab-label { font-size: 13px; font-weight: 500; color: #fff; font-family: 'Inter', sans-serif; }
+    .fab-circle { width: 36px; height: 36px; border-radius: 1000px; background: #C7F1C5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* ── Shared ── */
+    .section-label { font-size: 11px; font-weight: 600; color: #AEAEB2; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+    .back-btn { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #E5E5EA; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+    .screen-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .screen-title { font-size: 20px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.4px; }
+
+    .cta {
+      width: 100%;
+      padding: 16px;
+      background: #1C1C1E;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.2px;
+    }
+    .cta.secondary { background: #F5F2EC; color: #1C1C1E; margin-top: 10px; }
+
+    /* ════════════════════════
+       HOME
+    ════════════════════════ */
+    .home-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; }
+    .home-header h1 { font-size: 22px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+    .home-header p { font-size: 13px; color: #AEAEB2; margin-top: 2px; }
+
+    .streak-nudge {
+      display: flex; align-items: center; justify-content: space-between;
+      background: #1C1C1E; border-radius: 16px; padding: 14px 18px; margin-bottom: 16px;
+      cursor: pointer; transition: opacity 0.12s;
+    }
+    .streak-nudge:hover { opacity: 0.9; }
+    .streak-nudge-left { display: flex; align-items: center; gap: 10px; }
+    .streak-nudge-flame { font-size: 20px; }
+    .streak-nudge-text { font-size: 14px; font-weight: 600; color: #fff; }
+    .streak-nudge-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+    .streak-nudge-right { font-size: 11px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 3px; }
+
+    /* ════════════════════════
+       TRACKER
+    ════════════════════════ */
+    .tracker-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+    .tracker-header h1 { font-size: 22px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+    .tracker-header p { font-size: 13px; color: #AEAEB2; margin-top: 2px; }
+
+    .streak-card {
+      background: #1C1C1E; border-radius: 20px; padding: 20px; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; transition: opacity 0.12s;
+    }
+    .streak-card:hover { opacity: 0.92; }
+    .streak-main { display: flex; flex-direction: column; gap: 3px; }
+    .streak-number { font-size: 52px; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -2px; }
+    .streak-sub { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; }
+    .streak-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .streak-best-val { font-size: 22px; font-weight: 700; color: #fff; }
+    .streak-best-label { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .streak-history-hint { font-size: 11px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 3px; }
+
+    .logged-slots { display: flex; flex-direction: column; margin-bottom: 24px; }
+
+    .log-entry {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 14px; margin-bottom: 10px;
+    }
+    .log-entry-icon { width: 40px; height: 40px; border-radius: 12px; background: #D1FAE5; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .log-entry-info { flex: 1; }
+    .log-entry-name { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+    .log-entry-time { font-size: 12px; color: #16A34A; margin-top: 2px; }
+
+    .remove-btn {
+      width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #E5E5EA;
+      background: #fff; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: background 0.12s, border-color 0.12s;
+    }
+    .remove-btn:hover { background: #FEF2F2; border-color: #FECDD3; }
+    .remove-btn:hover svg path { stroke: #E5373A; }
+
+    .view-history-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; background: #F5F2EC; border-radius: 14px;
+      cursor: pointer; margin-bottom: 4px; transition: background 0.12s;
+    }
+    .view-history-row:hover { background: #EDE9E1; }
+    .view-history-label { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+    .view-history-sub { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+
+    .badges-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+    .badges-row::-webkit-scrollbar { display: none; }
+    .badge-chip { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #F5F2EC; border-radius: 20px; white-space: nowrap; cursor: pointer; transition: background 0.12s; }
+    .badge-chip:hover { background: #EDE9E1; }
+    .badge-chip-name { font-size: 12px; font-weight: 600; color: #1C1C1E; }
+
+    /* ════════════════════════
+       TRACKER DETAIL
+    ════════════════════════ */
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+    .stat-tile { background: #F5F2EC; border-radius: 14px; padding: 14px 10px; text-align: center; }
+    .stat-num { font-size: 24px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.5px; }
+    .stat-lbl { font-size: 11px; color: #AEAEB2; margin-top: 2px; }
+
+    .month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .month-label { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+    .month-btn { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #E5E5EA; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 16px; }
+    .cal-hdr { text-align: center; font-size: 11px; font-weight: 600; color: #AEAEB2; padding: 4px 0 6px; }
+    .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 13px; font-weight: 500; color: #1C1C1E; }
+    .cal-day.future { color: #D1D1D6; }
+    .cal-day.today { background: #1C1C1E; color: #fff; font-weight: 700; }
+    .cal-day.logged { background: #D1FAE5; color: #15803D; font-weight: 700; }
+
+    .cal-legend { display: flex; gap: 16px; margin-bottom: 24px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .legend-label { font-size: 11px; color: #AEAEB2; }
+    .section-divider { height: 1px; background: #F0F0F0; margin: 4px 0 24px; }
+
+    .badges-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .badge-tile { background: #F5F2EC; border-radius: 16px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; cursor: pointer; transition: background 0.12s; }
+    .badge-tile:hover { background: #EDE9E1; }
+    .badge-tile.locked { opacity: 0.35; cursor: default; }
+    .badge-tile.locked:hover { background: #F5F2EC; }
+    .badge-emoji-wrap { width: 50px; height: 50px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .badge-tile-name { font-size: 11px; font-weight: 600; color: #1C1C1E; line-height: 1.3; }
+    .badge-tile-status { font-size: 10px; color: #AEAEB2; }
+
+    /* ════════════════════════
+       LOG SUCCESS
+    ════════════════════════ */
+    .success-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; text-align: center; }
+    .success-icon { width: 76px; height: 76px; border-radius: 50%; background: #D1FAE5; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 20px; }
+    .success-title { font-size: 26px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.6px; margin-bottom: 8px; }
+    .success-sub { font-size: 14px; color: #AEAEB2; line-height: 1.6; margin-bottom: 28px; }
+    .log-summary { background: #F5F2EC; border-radius: 16px; padding: 16px; width: 100%; margin-bottom: 28px; text-align: left; }
+    .summary-row { display: flex; justify-content: space-between; font-size: 14px; }
+    .summary-row + .summary-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid #E5E5EA; }
+    .summary-key { color: #AEAEB2; }
+    .summary-val { font-weight: 600; color: #1C1C1E; }
+
+    /* ════════════════════════
+       SUBSCRIPTIONS
+    ════════════════════════ */
+    .subs-header { margin-bottom: 24px; }
+    .subs-title { font-size: 22px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+    .subs-sub { font-size: 13px; color: #AEAEB2; margin-top: 4px; }
+    .sub-card { border: 1.5px solid #E5E5EA; border-radius: 20px; padding: 18px; margin-bottom: 12px; }
+    .sub-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .sub-product-thumb { width: 48px; height: 48px; border-radius: 12px; background: #F5F2EC; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .sub-product-info { flex: 1; }
+    .sub-product-name { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+    .sub-product-detail { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+    .sub-status-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; background: #D1FAE5; color: #16A34A; }
+    .sub-meta-row { display: flex; justify-content: space-between; font-size: 13px; padding-top: 14px; border-top: 1px solid #F0F0F0; }
+    .sub-meta-key { color: #AEAEB2; }
+    .sub-meta-val { font-weight: 600; color: #1C1C1E; }
+    .sub-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .sub-action-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1.5px solid #E5E5EA; background: #fff; font-size: 13px; font-weight: 600; color: #1C1C1E; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.12s; }
+    .sub-action-btn:hover { background: #F5F2EC; }
+
+    /* ════════════════════════
+       PROFILE
+    ════════════════════════ */
+    .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+    .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: #1C1C1E; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; font-weight: 700; flex-shrink: 0; }
+    .profile-name { font-size: 18px; font-weight: 700; color: #1C1C1E; }
+    .profile-email { font-size: 13px; color: #AEAEB2; margin-top: 2px; }
+    .settings-group { margin-bottom: 24px; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #F0F0F0; cursor: pointer; }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row-label { font-size: 15px; color: #1C1C1E; }
+    .settings-row-value { font-size: 13px; color: #AEAEB2; display: flex; align-items: center; gap: 6px; }
+
+    /* ════════════════════════
+       OVERLAYS (shared)
+    ════════════════════════ */
+    .modal-overlay {
+      display: none; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 200;
+      border-radius: 32px; align-items: flex-end;
+    }
+    .modal-overlay.visible { display: flex; }
+    .modal-sheet {
+      width: 100%; background: #fff; border-radius: 28px 28px 0 0;
+      padding: 36px 28px 44px; display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    .modal-badge-icon { width: 88px; height: 88px; border-radius: 50%; background: #FEF3C7; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; }
+    .modal-earned-tag { font-size: 11px; font-weight: 700; color: #D97706; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .modal-badge-name { font-size: 26px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.6px; margin-bottom: 8px; }
+    .modal-badge-desc { font-size: 14px; color: #AEAEB2; line-height: 1.6; margin-bottom: 28px; }
+
+    /* ════════════════════════
+       LOG SHEET
+    ════════════════════════ */
+    .log-sheet-overlay {
+      display: none; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 150;
+      border-radius: 32px; align-items: flex-end;
+    }
+    .log-sheet-overlay.visible { display: flex; }
+
+    .log-sheet-panel {
+      width: 100%; background: #fff;
+      border-radius: 28px 28px 0 0;
+      padding: 12px 24px 36px;
+      animation: slideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .sheet-handle { width: 36px; height: 4px; background: #E5E5EA; border-radius: 2px; margin: 0 auto 20px; }
+    .sheet-title { font-size: 20px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.4px; margin-bottom: 3px; }
+    .sheet-sub { font-size: 13px; color: #AEAEB2; margin-bottom: 20px; }
+
+    /* Single product layout */
+    .sheet-single-card {
+      display: flex; flex-direction: column; align-items: center;
+      background: #F5F2EC; border-radius: 20px;
+      padding: 28px 20px 24px; margin-bottom: 16px; gap: 10px;
+    }
+    .sheet-single-emoji { font-size: 52px; line-height: 1; }
+    .sheet-single-name { font-size: 18px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.3px; text-align: center; }
+
+    /* Multi product rows */
+    .sheet-product-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .sheet-product-row {
+      display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+      border-radius: 16px; border: 1.5px solid #E5E5EA;
+      cursor: pointer; transition: background 0.1s, border-color 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sheet-product-row:hover { background: #F5F2EC; border-color: #C7C7CC; }
+    .sheet-product-row:active { background: #1C1C1E; border-color: #1C1C1E; }
+    .sheet-product-row:active .sheet-row-name { color: #fff; }
+    .sheet-product-row:active .sheet-row-icon { background: rgba(255,255,255,0.15); }
+    .sheet-product-row:active .sheet-row-arrow path { stroke: rgba(255,255,255,0.4); }
+    .sheet-row-icon { width: 44px; height: 44px; border-radius: 12px; background: #F5F2EC; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .sheet-row-name { flex: 1; font-size: 16px; font-weight: 600; color: #1C1C1E; }
+
+    /* Demo toggle */
+    .sheet-demo-row { display: flex; align-items: center; justify-content: center; gap: 6px; padding-top: 16px; margin-top: 8px; border-top: 1px solid #F0F0F0; }
+    .sheet-demo-label { font-size: 11px; color: #AEAEB2; }
+    .demo-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1.5px solid #E5E5EA; background: #fff; color: #AEAEB2; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s; }
+    .demo-pill.active { background: #1C1C1E; color: #fff; border-color: #1C1C1E; }
+  </style>
+</head>
+<body>
+<div class="mobile-container" id="app">
+
+  <!-- HOME -->
+  <div id="screen-home" class="screen active">
+    <div class="screen-scroll">
+      <div class="home-header">
+        <div>
+          <h1>Good morning, Alex 👋</h1>
+          <p>Wednesday, 5 August 2026</p>
+        </div>
+      </div>
+      <div class="streak-nudge" onclick="showScreen('tracker')">
+        <div class="streak-nudge-left">
+          <span class="streak-nudge-flame">🔥</span>
+          <div>
+            <div class="streak-nudge-text">14 day streak</div>
+            <div class="streak-nudge-sub">Best ever: 21 days</div>
+          </div>
+        </div>
+        <div class="streak-nudge-right">
+          View tracker
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M4.5 2.5L8 6L4.5 9.5" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACKER -->
+  <div id="screen-tracker" class="screen">
+    <div class="screen-scroll">
+      <div class="tracker-header">
+        <div>
+          <h1>Tracker</h1>
+          <p>Wednesday, 5 August 2026</p>
+        </div>
+      </div>
+      <div class="streak-card" onclick="showScreen('tracker-detail')">
+        <div class="streak-main">
+          <div class="streak-number">14</div>
+          <div class="streak-sub">Day streak 🔥</div>
+        </div>
+        <div class="streak-right">
+          <div>
+            <div class="streak-best-val">21</div>
+            <div class="streak-best-label">Best streak</div>
+          </div>
+          <div class="streak-history-hint">
+            Full history
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M4.5 2.5L8 6L4.5 9.5" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="section-label">Logged today</div>
+      <div class="logged-slots" id="logged-slots-container"></div>
+      <div class="view-history-row" onclick="showScreen('tracker-detail')">
+        <div>
+          <div class="view-history-label">History & badges</div>
+          <div class="view-history-sub">Calendar, streaks and your badge collection</div>
+        </div>
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
+          <path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div style="margin-top:16px">
+        <div class="section-label">Recent badges</div>
+        <div class="badges-row">
+          <div class="badge-chip" onclick="showScreen('tracker-detail')"><span>🌱</span><span class="badge-chip-name">First Sip</span></div>
+          <div class="badge-chip" onclick="showScreen('tracker-detail')"><span>⚡</span><span class="badge-chip-name">Week Warrior</span></div>
+          <div class="badge-chip" onclick="showScreen('tracker-detail')"><span>🔥</span><span class="badge-chip-name">Fortnight Fire</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACKER DETAIL -->
+  <div id="screen-tracker-detail" class="screen">
+    <div class="screen-scroll">
+      <div class="screen-header">
+        <div class="back-btn" onclick="showScreen('tracker')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="screen-title">History & badges</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-tile"><div class="stat-num">14</div><div class="stat-lbl">Day streak</div></div>
+        <div class="stat-tile"><div class="stat-num">21</div><div class="stat-lbl">Best streak</div></div>
+        <div class="stat-tile"><div class="stat-num">38</div><div class="stat-lbl">Total logs</div></div>
+      </div>
+      <div class="month-nav">
+        <div class="month-btn"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6L6 11" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="month-label">August 2026</div>
+        <div class="month-btn"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-hdr">Mo</div><div class="cal-hdr">Tu</div><div class="cal-hdr">We</div>
+        <div class="cal-hdr">Th</div><div class="cal-hdr">Fr</div><div class="cal-hdr">Sa</div><div class="cal-hdr">Su</div>
+        <div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div>
+        <div class="cal-day logged">1</div><div class="cal-day logged">2</div>
+        <div class="cal-day logged">3</div><div class="cal-day logged">4</div>
+        <div class="cal-day today">5</div><div class="cal-day future">6</div><div class="cal-day future">7</div><div class="cal-day future">8</div><div class="cal-day future">9</div>
+        <div class="cal-day future">10</div><div class="cal-day future">11</div><div class="cal-day future">12</div><div class="cal-day future">13</div><div class="cal-day future">14</div><div class="cal-day future">15</div><div class="cal-day future">16</div>
+        <div class="cal-day future">17</div><div class="cal-day future">18</div><div class="cal-day future">19</div><div class="cal-day future">20</div><div class="cal-day future">21</div><div class="cal-day future">22</div><div class="cal-day future">23</div>
+        <div class="cal-day future">24</div><div class="cal-day future">25</div><div class="cal-day future">26</div><div class="cal-day future">27</div><div class="cal-day future">28</div><div class="cal-day future">29</div><div class="cal-day future">30</div>
+        <div class="cal-day future">31</div>
+      </div>
+      <div class="cal-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#D1FAE5"></div><span class="legend-label">Logged</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1C1C1E"></div><span class="legend-label">Today</span></div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="section-label">Badges</div>
+      <div class="badges-grid">
+        <div class="badge-tile" onclick="openBadgeModal('🌱','First Sip','You logged your very first Huel. The journey starts here.')">
+          <div class="badge-emoji-wrap">🌱</div><div class="badge-tile-name">First Sip</div><div class="badge-tile-status">Earned</div>
+        </div>
+        <div class="badge-tile" onclick="openBadgeModal('⚡','Week Warrior','You logged every day this week. Total consistency.')">
+          <div class="badge-emoji-wrap">⚡</div><div class="badge-tile-name">Week Warrior</div><div class="badge-tile-status">Earned</div>
+        </div>
+        <div class="badge-tile" onclick="openBadgeModal('🔥','Fortnight Fire','14 days straight. The habit is real.')">
+          <div class="badge-emoji-wrap">🔥</div><div class="badge-tile-name">Fortnight Fire</div><div class="badge-tile-status">Earned</div>
+        </div>
+        <div class="badge-tile locked"><div class="badge-emoji-wrap">💎</div><div class="badge-tile-name">Diamond Habit</div><div class="badge-tile-status">14 / 30 days</div></div>
+        <div class="badge-tile locked"><div class="badge-emoji-wrap">🎯</div><div class="badge-tile-name">The Consistent</div><div class="badge-tile-status">14 / 30 days</div></div>
+        <div class="badge-tile locked"><div class="badge-emoji-wrap">🌍</div><div class="badge-tile-name">100 Club</div><div class="badge-tile-status">38 / 100 logs</div></div>
+        <div class="badge-tile locked"><div class="badge-emoji-wrap">👑</div><div class="badge-tile-name">Huel Royalty</div><div class="badge-tile-status">50 / 50 day streak</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG SUCCESS -->
+  <div id="screen-log-success" class="screen">
+    <div class="success-wrap">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Logged!</div>
+      <div class="success-sub" id="success-sub">Logged.<br>Keep the streak going 🔥</div>
+      <div class="log-summary">
+        <div class="summary-row"><span class="summary-key">Product</span><span class="summary-val" id="sum-product">—</span></div>
+        <div class="summary-row"><span class="summary-key">Current streak</span><span class="summary-val">14 days 🔥</span></div>
+      </div>
+      <button class="cta" onclick="showScreen('home')">Back to home</button>
+      <button class="cta secondary" onclick="showScreen('tracker')">View tracker</button>
+    </div>
+  </div>
+
+  <!-- SUBSCRIPTIONS -->
+  <div id="screen-subscriptions" class="screen">
+    <div class="screen-scroll">
+      <div class="subs-header"><div class="subs-title">Subscriptions</div><div class="subs-sub">2 active</div></div>
+      <div class="sub-card">
+        <div class="sub-card-top">
+          <div class="sub-product-thumb">⚫</div>
+          <div class="sub-product-info"><div class="sub-product-name">Huel Black Edition</div><div class="sub-product-detail">2 bags/month</div></div>
+          <div class="sub-status-pill">Active</div>
+        </div>
+        <div class="sub-meta-row"><span class="sub-meta-key">Next delivery</span><span class="sub-meta-val">18 Aug 2026</span></div>
+        <div class="sub-actions">
+          <button class="sub-action-btn">Edit</button>
+          <button class="sub-action-btn">Skip next</button>
+          <button class="sub-action-btn" style="color:#E5373A;border-color:#FECDD3">Cancel</button>
+        </div>
+      </div>
+      <div class="sub-card">
+        <div class="sub-card-top">
+          <div class="sub-product-thumb">🥤</div>
+          <div class="sub-product-info"><div class="sub-product-name">Ready-to-Drink</div><div class="sub-product-detail">12 bottles/month</div></div>
+          <div class="sub-status-pill">Active</div>
+        </div>
+        <div class="sub-meta-row"><span class="sub-meta-key">Next delivery</span><span class="sub-meta-val">22 Aug 2026</span></div>
+        <div class="sub-actions">
+          <button class="sub-action-btn">Edit</button>
+          <button class="sub-action-btn">Skip next</button>
+          <button class="sub-action-btn" style="color:#E5373A;border-color:#FECDD3">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="screen-profile" class="screen">
+    <div class="screen-scroll">
+      <div class="profile-header">
+        <div class="profile-avatar">A</div>
+        <div><div class="profile-name">Alex Woodward</div><div class="profile-email">alex@huel.com</div></div>
+      </div>
+      <div class="section-label">Account</div>
+      <div class="settings-group">
+        <div class="settings-row"><span class="settings-row-label">Personal details</span><span class="settings-row-value"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="settings-row"><span class="settings-row-label">Notifications</span><span class="settings-row-value">On <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="settings-row"><span class="settings-row-label">Reminders</span><span class="settings-row-value">Off <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+      <div class="section-label">Preferences</div>
+      <div class="settings-group">
+        <div class="settings-row"><span class="settings-row-label">Dietary goals</span><span class="settings-row-value"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="settings-row"><span class="settings-row-label">Units</span><span class="settings-row-value">Metric <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      </div>
+      <div class="section-label">Support</div>
+      <div class="settings-group">
+        <div class="settings-row"><span class="settings-row-label">Help centre</span><span class="settings-row-value"><svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="settings-row"><span class="settings-row-label" style="color:#E5373A">Sign out</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BADGE MODAL -->
+  <div id="badge-modal" class="modal-overlay" onclick="handleModalClick(event)">
+    <div class="modal-sheet">
+      <div class="modal-badge-icon" id="modal-emoji">🏆</div>
+      <div class="modal-earned-tag">Badge unlocked!</div>
+      <div class="modal-badge-name" id="modal-name">—</div>
+      <div class="modal-badge-desc" id="modal-desc">—</div>
+      <button class="cta" onclick="closeBadgeModal()">Awesome! 🎉</button>
+    </div>
+  </div>
+
+  <!-- REMOVE CONFIRMATION -->
+  <div id="remove-modal" class="modal-overlay" onclick="if(event.target===this)closeRemoveModal()">
+    <div class="modal-sheet">
+      <div style="width:40px;height:40px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;">🗑️</div>
+      <div class="modal-earned-tag" style="color:#E5373A;">Remove log?</div>
+      <div class="modal-badge-name" style="font-size:18px;" id="remove-product">—</div>
+      <div class="modal-badge-desc" style="margin-bottom:20px;">Logged at <span id="remove-time">—</span></div>
+      <button class="cta" style="background:#E5373A;margin-bottom:0;" onclick="confirmRemove()">Yes, remove it</button>
+      <button class="cta secondary" onclick="closeRemoveModal()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- LOG SHEET -->
+  <div id="log-sheet" class="log-sheet-overlay" onclick="if(event.target===this)closeLogSheet()">
+    <div class="log-sheet-panel">
+      <div class="sheet-handle"></div>
+
+      <!-- Single product view -->
+      <div id="sheet-single">
+        <div class="sheet-title">Log a Huel</div>
+        <div class="sheet-sub">From your subscription</div>
+        <div class="sheet-single-card">
+          <div class="sheet-single-emoji" id="sheet-single-emoji">⚫</div>
+          <div class="sheet-single-name" id="sheet-single-name">Huel Black Edition</div>
+        </div>
+        <button class="cta" id="sheet-log-btn" onclick="logProduct()">Log it ✓</button>
+      </div>
+
+      <!-- Multi product view -->
+      <div id="sheet-multi" style="display:none">
+        <div class="sheet-title">Log a Huel</div>
+        <div class="sheet-sub">What did you have?</div>
+        <div class="sheet-product-list" id="sheet-product-list"></div>
+      </div>
+
+      <!-- Demo toggle -->
+      <div class="sheet-demo-row">
+        <span class="sheet-demo-label">Demo:</span>
+        <button class="demo-pill active" id="demo-pill-1" onclick="setDemoMode(1)">1 product</button>
+        <button class="demo-pill" id="demo-pill-3" onclick="setDemoMode(3)">3 products</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <button id="log-fab" onclick="openLogSheet()">
+    <span class="fab-label">Log a meal</span>
+    <div class="fab-circle">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 4V16M4 10H16" stroke="#1C1C1E" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </button>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="showScreen('home')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M2 10L11 2L20 10V20H14V14H8V20H2V10Z" fill="currentColor"/></svg>
+      </div>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item" id="nav-tracker" onclick="showScreen('tracker')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M11 6V11L14 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Tracker</span>
+    </div>
+    <div class="nav-item" id="nav-subscriptions" onclick="showScreen('subscriptions')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <rect x="2" y="6" width="18" height="13" rx="3" fill="currentColor"/>
+          <path d="M6 6V5C6 3.343 7.343 2 9 2H13C14.657 2 16 3.343 16 5V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M7 13H15M7 16H11" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Subscriptions</span>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="showScreen('profile')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="8" r="4" fill="currentColor"/>
+          <path d="M3 20C3 16.686 6.686 14 11 14C15.314 14 19 16.686 19 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Profile</span>
+    </div>
+  </nav>
+
+</div>
+
+<script>
+  const NAV_MAP = {
+    'home':           'nav-home',
+    'log-success':    'nav-home',
+    'tracker':        'nav-tracker',
+    'tracker-detail': 'nav-tracker',
+    'subscriptions':  'nav-subscriptions',
+    'profile':        'nav-profile',
+  };
+
+  const PRODUCT_EMOJI = {
+    'Huel Black Edition': '⚫',
+    'Ready-to-Drink':     '🥤',
+    'Huel Bar':           '🍫',
+    'Hot & Savoury':      '🍲',
+  };
+
+  // Simulates products derived from the customer's order history
+  const DEMO_SETS = {
+    1: [{ name: 'Huel Black Edition', emoji: '⚫' }],
+    3: [
+      { name: 'Huel Black Edition', emoji: '⚫' },
+      { name: 'Ready-to-Drink',     emoji: '🥤' },
+      { name: 'Huel Bar',           emoji: '🍫' },
+    ],
+  };
+  let myProducts = [...DEMO_SETS[1]];
+
+  const todaysMeals = [];
+  let removeIndex = null;
+
+  const FAB_SCREENS = new Set(['home', 'tracker']);
+
+  function nowTime() {
+    const d = new Date();
+    let h = d.getHours();
+    const m = String(d.getMinutes()).padStart(2, '0');
+    const ampm = h >= 12 ? 'pm' : 'am';
+    h = h % 12 || 12;
+    return `${h}:${m}${ampm}`;
+  }
+
+  // ── Screen routing ──
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const navId = NAV_MAP[name];
+    if (navId) document.getElementById(navId).classList.add('active');
+    document.getElementById('log-fab').style.display = FAB_SCREENS.has(name) ? 'flex' : 'none';
+  }
+
+  // ── Log sheet ──
+  function openLogSheet() {
+    renderLogSheet();
+    document.getElementById('log-sheet').classList.add('visible');
+  }
+
+  function closeLogSheet() {
+    document.getElementById('log-sheet').classList.remove('visible');
+  }
+
+  function renderLogSheet() {
+    const single = document.getElementById('sheet-single');
+    const multi  = document.getElementById('sheet-multi');
+
+    if (myProducts.length === 1) {
+      single.style.display = 'block';
+      multi.style.display  = 'none';
+      document.getElementById('sheet-single-emoji').textContent = myProducts[0].emoji;
+      document.getElementById('sheet-single-name').textContent  = myProducts[0].name;
+    } else {
+      single.style.display = 'none';
+      multi.style.display  = 'block';
+      document.getElementById('sheet-product-list').innerHTML = myProducts.map(p => `
+        <div class="sheet-product-row" onclick="logProduct('${p.name}')">
+          <div class="sheet-row-icon">${p.emoji}</div>
+          <div class="sheet-row-name">${p.name}</div>
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" class="sheet-row-arrow">
+            <path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>`).join('');
+    }
+  }
+
+  // Called by single-product "Log it" button (no argument needed)
+  // Called by multi-product row tap (passes name)
+  function logProduct(name) {
+    const product = name || myProducts[0].name;
+    closeLogSheet();
+    todaysMeals.push({ product, time: nowTime() });
+    renderMeals();
+    document.getElementById('sum-product').textContent = product;
+    document.getElementById('success-sub').innerHTML = `${product} logged.<br>Keep the streak going 🔥`;
+    showScreen('log-success');
+  }
+
+  function setDemoMode(n) {
+    myProducts = [...DEMO_SETS[n]];
+    document.getElementById('demo-pill-1').classList.toggle('active', n === 1);
+    document.getElementById('demo-pill-3').classList.toggle('active', n === 3);
+    renderLogSheet();
+  }
+
+  // ── Tracker ──
+  function renderMeals() {
+    const container = document.getElementById('logged-slots-container');
+    if (todaysMeals.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center;padding:40px 0 32px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <div style="font-size:36px;">🥤</div>
+          <div style="font-size:15px;font-weight:600;color:#1C1C1E;">Nothing logged yet</div>
+          <div style="font-size:13px;color:#AEAEB2;line-height:1.5;">Tap "Log a meal" to record<br>your first Huel of the day.</div>
+        </div>`;
+      return;
+    }
+    container.innerHTML = todaysMeals.map((e, i) => `
+      <div class="log-entry">
+        <div class="log-entry-icon">${PRODUCT_EMOJI[e.product] || '🌿'}</div>
+        <div class="log-entry-info">
+          <div class="log-entry-name">${e.product}</div>
+          <div class="log-entry-time">${e.time}</div>
+        </div>
+        <button class="remove-btn" onclick="openRemoveModal(${i})" aria-label="Remove">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 2L10 10M10 2L2 10" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>`).join('');
+  }
+
+  // ── Remove flow ──
+  function openRemoveModal(index) {
+    removeIndex = index;
+    const e = todaysMeals[index];
+    document.getElementById('remove-product').textContent = e.product;
+    document.getElementById('remove-time').textContent = e.time;
+    document.getElementById('remove-modal').classList.add('visible');
+  }
+
+  function confirmRemove() {
+    if (removeIndex === null) return;
+    document.getElementById('remove-modal').classList.remove('visible');
+    const entries = document.querySelectorAll('.log-entry');
+    const el = entries[removeIndex];
+    const idx = removeIndex;
+    removeIndex = null;
+    if (!el) { todaysMeals.splice(idx, 1); renderMeals(); return; }
+    el.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(56px)';
+    setTimeout(() => {
+      const h = el.offsetHeight;
+      el.style.transition = 'max-height 0.2s ease, margin-bottom 0.2s ease, padding 0.2s ease, border-width 0.2s ease';
+      el.style.overflow = 'hidden';
+      el.style.maxHeight = h + 'px';
+      el.offsetHeight;
+      el.style.maxHeight = '0';
+      el.style.marginBottom = '0';
+      el.style.padding = '0';
+      el.style.borderWidth = '0';
+    }, 200);
+    setTimeout(() => { todaysMeals.splice(idx, 1); renderMeals(); }, 420);
+  }
+
+  function closeRemoveModal() {
+    removeIndex = null;
+    document.getElementById('remove-modal').classList.remove('visible');
+  }
+
+  // ── Badge modal ──
+  function openBadgeModal(emoji, name, desc) {
+    document.getElementById('modal-emoji').textContent = emoji;
+    document.getElementById('modal-name').textContent = name;
+    document.getElementById('modal-desc').textContent = desc;
+    document.getElementById('badge-modal').classList.add('visible');
+  }
+  function closeBadgeModal() { document.getElementById('badge-modal').classList.remove('visible'); }
+  function handleModalClick(e) { if (e.target === document.getElementById('badge-modal')) closeBadgeModal(); }
+
+  renderMeals();
+</script>
+</body>
+</html>
