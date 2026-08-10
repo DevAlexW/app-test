@@ -970,6 +970,7 @@
   let loggedFromScreen = null;
   let pendingBadge = null;
   let pendingRemove = null;
+  let sheetClosing = false;
 
   const BADGE_DEFS = [
     {
@@ -1007,15 +1008,18 @@
     document.getElementById('log-fab').style.display = FAB_SCREENS.has(name) ? 'flex' : 'none';
   }
 
-  function openLogSheet() {
+  function openLogSheet(preSlot = null) {
+    if (sheetClosing) return;
     selectedProduct = null;
     selectedSlot = null;
     document.querySelectorAll('#sheet-products .sheet-prod-card, #sheet-slots .sheet-slot-card').forEach(c => c.classList.remove('selected'));
     document.getElementById('sheet-log-btn').classList.remove('ready');
     document.getElementById('log-sheet').classList.add('visible');
+    if (preSlot) selectSlot(preSlot);
   }
 
   function closeLogSheet() {
+    sheetClosing = true;
     const overlay = document.getElementById('log-sheet');
     const panel = overlay.querySelector('.log-sheet-panel');
     panel.style.transition = 'transform 0.26s cubic-bezier(0.4, 0, 1, 1)';
@@ -1028,6 +1032,7 @@
       panel.style.transform = '';
       overlay.style.transition = '';
       overlay.style.background = '';
+      sheetClosing = false;
     }, 280);
   }
 
@@ -1106,8 +1111,10 @@
         <div class="popup-badge-desc">${b.desc}</div>
         <div class="popup-divider"></div>
         <div class="popup-log-mini">${logLine}</div>
-        <button class="popup-dismiss" onclick="viewTrackerFromPopup()">View tracker</button>
-        <button class="popup-secondary" onclick="dismissLoggedPopup()">Done</button>`;
+        <button class="popup-dismiss" onclick="${fromHome ? 'viewTrackerFromPopup()' : 'dismissLoggedPopup()'}">
+          ${fromHome ? 'View tracker' : 'Done'}
+        </button>
+        ${fromHome ? '<button class="popup-secondary" onclick="dismissLoggedPopup()">Done</button>' : ''}`;
     } else if (fromHome) {
       html = `
         <div class="popup-slot-icon">${meta.emoji}</div>
@@ -1300,7 +1307,7 @@
                   </svg>
                 </button>
               </div>`).join('')}
-            <div class="add-another-row" onclick="openLogSheet()">
+            <div class="add-another-row" onclick="openLogSheet('${slot}')">
               <div class="add-icon">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M6 1V11M1 6H11" stroke="#16A34A" stroke-width="1.8" stroke-linecap="round"/>
