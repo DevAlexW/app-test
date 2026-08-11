@@ -370,6 +370,7 @@
     }
     .log-popup.dismissing {
       background: rgba(0,0,0,0);
+      pointer-events: none;
     }
 
     .log-popup-card {
@@ -480,6 +481,16 @@
       transition: color 0.12s;
     }
     .popup-secondary:hover { color: #1C1C1E; }
+    .popup-tertiary {
+      width: 100%; padding: 6px;
+      border: none; background: none;
+      font-size: 12px; font-weight: 500;
+      color: #C7C7CC; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      margin-top: 2px;
+      transition: color 0.12s;
+    }
+    .popup-tertiary:hover { color: #6B6B6B; }
   </style>
 </head>
 <body>
@@ -881,6 +892,7 @@
   }
 
   function logSlot(slot) {
+    sheetClosing = true;
     const overlay = document.getElementById('log-sheet');
     const panel = overlay.querySelector('.log-sheet-panel');
 
@@ -900,8 +912,8 @@
     openSlots.add(slot);
     pendingBadge = checkForBadge(slot);
 
-    // Render tracker in background (stays on current screen)
-    pendingAnimSlot = isNewSlot ? slot : null;
+    // Only hide card for entrance animation when already on tracker
+    pendingAnimSlot = (isNewSlot && loggedFromScreen === 'tracker') ? slot : null;
     renderMeals();
 
     // Clean up overlay, then show popup
@@ -911,6 +923,7 @@
       panel.style.transform = '';
       overlay.style.transition = '';
       overlay.style.background = '';
+      sheetClosing = false;
       showLoggedPopup(slot);
     }, 240);
   }
@@ -946,20 +959,23 @@
         <button class="popup-dismiss" onclick="${fromHome ? 'viewTrackerFromPopup()' : 'dismissLoggedPopup()'}">
           ${fromHome ? 'View tracker' : 'Done'}
         </button>
-        ${fromHome ? '<button class="popup-secondary" onclick="dismissLoggedPopup()">Done</button>' : ''}`;
+        ${fromHome ? '<button class="popup-secondary" onclick="dismissLoggedPopup()">Done</button>' : ''}
+        <button class="popup-tertiary" onclick="logAnotherFromPopup()">Log another meal</button>`;
     } else if (fromHome) {
       html = `
         <div class="popup-slot-icon">${meta.emoji}</div>
         <div class="popup-title">${meta.label} logged</div>
         <div class="popup-streak">14 day streak 🔥</div>
         <button class="popup-dismiss" onclick="viewTrackerFromPopup()">View tracker</button>
-        <button class="popup-secondary" onclick="dismissLoggedPopup()">Done</button>`;
+        <button class="popup-secondary" onclick="dismissLoggedPopup()">Done</button>
+        <button class="popup-tertiary" onclick="logAnotherFromPopup()">Log another meal</button>`;
     } else {
       html = `
         <div class="popup-slot-icon">${meta.emoji}</div>
         <div class="popup-title">${meta.label} logged</div>
         <div class="popup-streak">14 day streak 🔥</div>
-        <button class="popup-dismiss" onclick="dismissLoggedPopup()">Done</button>`;
+        <button class="popup-dismiss" onclick="dismissLoggedPopup()">Done</button>
+        <button class="popup-tertiary" onclick="logAnotherFromPopup()">Log another meal</button>`;
     }
 
     document.getElementById('popup-content').innerHTML = html;
@@ -993,6 +1009,18 @@
       pendingAnimSlot = null;
       loggedFromScreen = null;
       pendingBadge = null;
+    }, 240);
+  }
+
+  function logAnotherFromPopup() {
+    const popup = document.getElementById('log-popup');
+    popup.classList.add('dismissing');
+    setTimeout(() => {
+      popup.classList.remove('visible', 'dismissing');
+      pendingAnimSlot = null;
+      loggedFromScreen = null;
+      pendingBadge = null;
+      openLogSheet();
     }, 240);
   }
 
@@ -1035,9 +1063,23 @@
     const { slot, idx } = pendingRemove;
     pendingRemove = null;
 
+    // Splice immediately so a second remove can't target a stale index
+    todaysMeals[slot].splice(idx, 1);
+    const isEmpty = todaysMeals[slot].length === 0;
+    if (isEmpty) {
+      delete todaysMeals[slot];
+      openSlots.delete(slot);
+    }
+
+    // Single entry — animate the whole card out at once, no row stagger
+    if (isEmpty) {
+      animateCardOut('card-' + slot, () => renderMeals());
+      return;
+    }
+
     const rowId = `entry-${slot}-${idx}`;
     const row = document.getElementById(rowId);
-    if (!row) return;
+    if (!row) { renderMeals(); return; }
 
     // Phase 1 — slide out right + fade
     row.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
@@ -1052,16 +1094,9 @@
       row.style.borderWidth = '0';
     }, 200);
 
-    // Phase 3 — update state, then animate card out if last entry
+    // Phase 3 — re-render
     setTimeout(() => {
-      todaysMeals[slot].splice(idx, 1);
-      if (todaysMeals[slot].length === 0) {
-        delete todaysMeals[slot];
-        openSlots.delete(slot);
-        animateCardOut('card-' + slot, () => renderMeals());
-      } else {
-        renderMeals();
-      }
+      renderMeals();
     }, 420);
   }
 
@@ -1109,7 +1144,6 @@
       const isOpen = openSlots.has(slot);
       const multi = entries.length > 1;
       const summary = multi ? `${entries.length} logged today` : `${entries[0].time}`;
-      // New slots start invisible so animateCardIn can play the entrance
       const enteringStyle = slot === pendingAnimSlot
         ? ' style="overflow:hidden;max-height:0;opacity:0;transform:translateY(10px);"'
         : '';
