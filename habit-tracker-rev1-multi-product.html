@@ -689,7 +689,15 @@
       </div>
       <div class="section-label">Logged today</div>
       <div class="logged-slots" id="logged-slots-container"></div>
-      <div class="view-history-row" onclick="showScreen('tracker-detail')">
+      <div style="margin-top:16px">
+        <div class="section-label">Recent badges</div>
+        <div class="badges-row">
+          <div class="badge-chip" onclick="openBadgeModal('🌱','First Sip','You logged your very first Huel. The journey starts here.')"><span>🌱</span><span class="badge-chip-name">First Sip</span></div>
+          <div class="badge-chip" onclick="openBadgeModal('🐦','Early Bird','You logged breakfast 7 days in a row. Mornings are sorted.')"><span>🐦</span><span class="badge-chip-name">Early Bird</span></div>
+          <div class="badge-chip" onclick="openBadgeModal('⚡','Week Warrior','You logged every day this week. Total consistency.')"><span>⚡</span><span class="badge-chip-name">Week Warrior</span></div>
+        </div>
+      </div>
+      <div class="view-history-row" onclick="showScreen('tracker-detail')" style="margin-top:12px;">
         <div>
           <div class="view-history-label">History &amp; badges</div>
           <div class="view-history-sub">Calendar, streaks and your badge collection</div>
@@ -697,14 +705,6 @@
         <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
           <path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </div>
-      <div style="margin-top:16px">
-        <div class="section-label">Recent badges</div>
-        <div class="badges-row">
-          <div class="badge-chip" onclick="showScreen('tracker-detail')"><span>🌱</span><span class="badge-chip-name">First Sip</span></div>
-          <div class="badge-chip" onclick="showScreen('tracker-detail')"><span>🐦</span><span class="badge-chip-name">Early Bird</span></div>
-          <div class="badge-chip" onclick="showScreen('tracker-detail')"><span>⚡</span><span class="badge-chip-name">Week Warrior</span></div>
-        </div>
       </div>
     </div>
   </div>
