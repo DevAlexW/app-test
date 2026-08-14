@@ -57,7 +57,7 @@
       justify-content: space-around;
       padding: 8px 4px 24px;
     }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 10px; flex: 1; color: #AEAEB2; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 6px; flex: 1; color: #AEAEB2; }
     .nav-item.active { color: #1C1C1E; }
     .nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
     .nav-label { font-size: 10px; font-weight: 500; color: inherit; white-space: nowrap; }
@@ -120,6 +120,24 @@
     .home-sub-card-sub-label { font-size: 11px; color: #AEAEB2; margin-top: 2px; }
     .home-sub-card-warning { display: flex; align-items: center; gap: 6px; margin-top: 12px; background: #FFF7ED; border-radius: 8px; padding: 8px 10px; font-size: 12px; font-weight: 500; color: #92400E; line-height: 1.4; }
     .home-sub-card-locked { display: flex; align-items: center; gap: 6px; margin-top: 12px; background: #F5F5F5; border-radius: 8px; padding: 8px 10px; font-size: 12px; font-weight: 500; color: #6B6B6B; line-height: 1.4; }
+    .home-loyalty-card { background: #fff; border: 1.5px solid #E5E5EA; border-radius: 16px; padding: 18px; margin-bottom: 16px; cursor: pointer; transition: opacity 0.12s; }
+    .home-loyalty-card:hover { opacity: 0.9; }
+    .home-loyalty-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #AEAEB2; margin-bottom: 8px; }
+    .home-loyalty-points { font-size: 30px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; line-height: 1; }
+    .home-loyalty-pts-label { font-size: 13px; color: #6B6B6B; margin-top: 4px; margin-bottom: 18px; }
+    .home-loyalty-btn { display: inline-flex; align-items: center; gap: 6px; background: #1C1C1E; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 20px; }
+    .home-refer-card { background: #fff; border: 1.5px solid #E5E5EA; border-radius: 16px; padding: 18px; margin-bottom: 16px; cursor: pointer; }
+    .home-refer-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #AEAEB2; margin-bottom: 6px; }
+    .home-refer-title { font-size: 17px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.3px; margin-bottom: 6px; }
+    .home-refer-sub { font-size: 13px; color: #6B6B6B; line-height: 1.5; margin-bottom: 16px; }
+    .home-refer-btn { display: inline-flex; align-items: center; gap: 6px; background: #1C1C1E; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 20px; }
+    .home-product-card { background: #fff; border: 1.5px solid #E5E5EA; border-radius: 16px; padding: 18px; margin-bottom: 100px; }
+    .home-product-badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: #1C1C1E; color: #fff; padding: 3px 9px; border-radius: 20px; margin-bottom: 10px; }
+    .home-product-name { font-size: 16px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.3px; margin-bottom: 6px; }
+    .home-product-desc { font-size: 13px; color: #6B6B6B; line-height: 1.5; margin-bottom: 14px; }
+    .home-product-price { font-size: 15px; font-weight: 700; color: #1C1C1E; margin-bottom: 14px; }
+    .home-product-price span { font-size: 12px; font-weight: 400; color: #AEAEB2; margin-left: 6px; }
+    .home-product-btn { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid #1C1C1E; color: #1C1C1E; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
 
     /* ════════════════════════
        TRACKER
@@ -695,6 +713,7 @@
     .flavour-row:last-child { border-bottom: none; }
     .flavour-name { font-size: 15px; color: #1C1C1E; font-weight: 500; }
     .qty-control { display: flex; align-items: center; gap: 14px; }
+    .qty-ctrl { display: flex; align-items: center; gap: 10px; }
     .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid #E5E5EA; background: #fff; font-size: 18px; color: #1C1C1E; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; line-height: 1; transition: background 0.12s, border-color 0.12s; }
     .qty-btn:hover:not(:disabled) { background: #F5F2EC; border-color: #1C1C1E; }
     .qty-btn:disabled { opacity: 0.3; cursor: default; }
@@ -773,6 +792,31 @@
         </div>
       </div>
       <div id="home-sub-card" style="margin-bottom:16px"></div>
+
+      <div class="home-loyalty-card" onclick="showScreen('loyalty')">
+        <div class="home-loyalty-eyebrow">Huel+</div>
+        <div class="home-loyalty-points">100</div>
+        <div class="home-loyalty-pts-label">points available to redeem</div>
+        <div class="home-loyalty-btn">My rewards →</div>
+      </div>
+
+      <div class="home-refer-card">
+        <div class="home-refer-eyebrow">Refer a friend</div>
+        <div class="home-refer-title">Gift friends £20 off Huel</div>
+        <div class="home-refer-sub">Share your link and get £20 credit when a friend places their first order.</div>
+        <div class="home-refer-btn">Share offer</div>
+      </div>
+
+      <div class="home-product-card">
+        <div class="home-product-badge">New</div>
+        <div class="home-product-name">Black Edition Ramen</div>
+        <div class="home-product-desc">A complete meal in minutes. 40g protein, just add hot water.</div>
+        <div style="display:flex;gap:10px">
+          <div class="home-product-btn" style="background:#1C1C1E;color:#fff;border-color:#1C1C1E">Add singles</div>
+          <div class="home-product-btn">Add a box</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -988,6 +1032,93 @@
     </div>
   </div>
 
+  <!-- LOYALTY -->
+  <div id="screen-loyalty" class="screen">
+    <div class="screen-scroll">
+      <div class="screen-header">
+        <div class="screen-title">Huel+</div>
+      </div>
+      <div style="background:#1C1C1E;border-radius:20px;padding:24px;margin-bottom:20px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px">Your points</div>
+        <div style="font-size:48px;font-weight:700;color:#fff;letter-spacing:-1px;line-height:1">100</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px">points available to redeem</div>
+      </div>
+      <div class="section-label">Redeem rewards</div>
+      <div class="settings-group" style="margin-bottom:20px">
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;width:100%">
+            <span style="font-size:14px;font-weight:600;color:#1C1C1E">£5 off your next order</span>
+            <span style="font-size:12px;font-weight:600;color:#1C1C1E">50 pts</span>
+          </div>
+          <span style="font-size:12px;color:#AEAEB2">Applied as a discount at checkout</span>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;width:100%">
+            <span style="font-size:14px;font-weight:600;color:#1C1C1E">£10 off your next order</span>
+            <span style="font-size:12px;font-weight:600;color:#1C1C1E">100 pts</span>
+          </div>
+          <span style="font-size:12px;color:#AEAEB2">Applied as a discount at checkout</span>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px;opacity:0.4">
+          <div style="display:flex;justify-content:space-between;width:100%">
+            <span style="font-size:14px;font-weight:600;color:#1C1C1E">Free product bundle</span>
+            <span style="font-size:12px;font-weight:600;color:#1C1C1E">250 pts</span>
+          </div>
+          <span style="font-size:12px;color:#AEAEB2">Not enough points yet</span>
+        </div>
+      </div>
+      <div class="section-label">How to earn</div>
+      <div class="settings-group" style="margin-bottom:20px">
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
+          <span style="font-size:14px;font-weight:600;color:#1C1C1E">Every subscription delivery</span>
+          <span style="font-size:12px;color:#AEAEB2">Earn 10 points per £1 spent</span>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
+          <span style="font-size:14px;font-weight:600;color:#1C1C1E">Refer a friend</span>
+          <span style="font-size:12px;color:#AEAEB2">Earn 50 points when they place their first order</span>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
+          <span style="font-size:14px;font-weight:600;color:#1C1C1E">Log your Huel daily</span>
+          <span style="font-size:12px;color:#AEAEB2">Earn 5 points per day you log</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REORDER -->
+  <div id="screen-reorder" class="screen">
+    <div class="screen-scroll">
+      <div class="screen-header">
+        <div class="back-btn" onclick="showScreen('orders')"><svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M9 1L1 8.5L9 16" stroke="#1C1C1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="screen-title">Reorder</div>
+      </div>
+      <div class="sub-delivery-card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="font-size:28px">🍜</span>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:#1C1C1E;letter-spacing:-0.3px">Black Edition Ramen</div>
+            <div style="font-size:12px;color:#AEAEB2;margin-top:2px">One-time purchase</div>
+          </div>
+        </div>
+        <div id="reorder-varieties-summary" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
+        <button class="sub-prod-edit" onclick="openSubSheet('reorder-varieties')" style="align-self:flex-start">Edit varieties</button>
+      </div>
+      <div class="section-label">Delivery details</div>
+      <div class="settings-group" style="margin-bottom:24px">
+        <div class="settings-row" onclick="openSubSheet('address')">
+          <span class="settings-row-label">Delivery address</span>
+          <span class="settings-row-value" style="font-size:12px;color:#AEAEB2;text-align:right;max-width:160px;line-height:1.4">14 Archer Street, London<svg style="margin-left:6px" width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <div class="settings-row" onclick="openSubSheet('payment')">
+          <span class="settings-row-label">Payment</span>
+          <span class="settings-row-value">Visa ···· 4242 <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1L6 6L1 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+      </div>
+      <button class="sub-sheet-btn" onclick="openSubSheet('add-to-sub')">Add to subscription</button>
+      <button class="sub-sheet-btn secondary" onclick="confirmReorder()">Add to basket</button>
+    </div>
+  </div>
+
   <!-- ORDERS -->
   <div id="screen-orders" class="screen">
     <div class="screen-scroll">
@@ -1011,6 +1142,20 @@
           </div>
           <div style="font-size:12px;color:#AEAEB2">Subscription 2 · 17 Jul 2026</div>
           <div style="font-size:11px;font-weight:500;color:#16A34A;background:#F0FDF0;padding:2px 8px;border-radius:20px">Delivered</div>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;width:100%">
+            <span style="font-size:14px;font-weight:600;color:#1C1C1E">Black Edition Ramen</span>
+            <span style="font-size:13px;font-weight:600;color:#1C1C1E">£16.32</span>
+          </div>
+          <div style="font-size:12px;color:#AEAEB2">One-time · 10 Jul 2026</div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="font-size:11px;font-weight:500;color:#16A34A;background:#F0FDF0;padding:2px 8px;border-radius:20px">Delivered</div>
+              <div style="font-size:11px;font-weight:500;color:#6B6B6B;background:#F5F5F5;padding:2px 8px;border-radius:20px">One-time</div>
+            </div>
+            <div style="font-size:12px;font-weight:600;color:#1C1C1E;cursor:pointer" onclick="showScreen('reorder');renderReorderVarieties()">Reorder →</div>
+          </div>
         </div>
         <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px">
           <div style="display:flex;justify-content:space-between;width:100%">
@@ -1065,6 +1210,10 @@
     <div class="nav-item" id="nav-orders" onclick="showScreen('orders')">
       <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="2" width="14" height="18" rx="2" fill="currentColor"/><path d="M7 7H15M7 11H15M7 15H11" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
       <span class="nav-label">Orders</span>
+    </div>
+    <div class="nav-item" id="nav-loyalty" onclick="showScreen('loyalty')">
+      <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L13.5 8H20L14.5 12L16.5 18.5L11 15L5.5 18.5L7.5 12L2 8H8.5L11 2Z" fill="currentColor"/></svg></div>
+      <span class="nav-label">Loyalty</span>
     </div>
   </nav>
 
@@ -1210,6 +1359,8 @@
     'subscriptions':  'nav-subscriptions',
     'sub-detail':     'nav-subscriptions',
     'orders':         'nav-orders',
+    'reorder':        'nav-orders',
+    'loyalty':        'nav-loyalty',
   };
 
   const MY_PRODUCTS = [
@@ -1813,6 +1964,113 @@
     overlay.classList.add('visible');
   }
 
+  const REORDER_DATA = {
+    varieties: [
+      { name: 'Asian-style Beef', qty: 2 },
+      { name: 'Spicy Korean Noodles', qty: 1 },
+      { name: 'Classic Chicken', qty: 1 },
+      { name: 'Katsu Curry Noodles', qty: 0 },
+    ],
+  };
+
+  function renderReorderVarieties() {
+    const el = document.getElementById('reorder-varieties-summary');
+    if (!el) return;
+    const active = REORDER_DATA.varieties.filter(v => v.qty > 0);
+    el.innerHTML = active.length
+      ? active.map(v => `<div class="sub-flavour-chip">${v.name} × ${v.qty}</div>`).join('')
+      : '<div style="font-size:13px;color:#AEAEB2">No varieties selected</div>';
+  }
+
+  function buildReorderVarieties() {
+    const rows = REORDER_DATA.varieties.map((v, i) => `
+      <div class="flavour-row">
+        <span class="flavour-name">${v.name}</span>
+        <div class="qty-ctrl">
+          <button class="qty-btn" id="rminus-${i}" onclick="adjReorderQty(${i},-1)" ${v.qty===0?'disabled':''}>−</button>
+          <span class="qty-val" id="rval-${i}">${v.qty}</span>
+          <button class="qty-btn" onclick="adjReorderQty(${i},1)">+</button>
+        </div>
+      </div>`).join('');
+    return `${SUB_TOP_ROW}
+      <div class="sub-sheet-title">Choose your varieties</div>
+      <div style="font-size:13px;color:#AEAEB2;margin:6px 0 20px;line-height:1.5">Select how many of each variety you'd like.</div>
+      ${rows}
+      <button class="sub-sheet-btn" style="margin-top:24px" onclick="saveReorderVarieties()">Save</button>`;
+  }
+
+  function adjReorderQty(idx, delta) {
+    REORDER_DATA.varieties[idx].qty = Math.max(0, REORDER_DATA.varieties[idx].qty + delta);
+    const qty = REORDER_DATA.varieties[idx].qty;
+    const valEl = document.getElementById(`rval-${idx}`);
+    const minusEl = document.getElementById(`rminus-${idx}`);
+    if (valEl) valEl.textContent = qty;
+    if (minusEl) minusEl.disabled = qty === 0;
+  }
+
+  function saveReorderVarieties() {
+    renderReorderVarieties();
+    closeSubSheet();
+    showToast('Varieties saved');
+  }
+
+  function confirmReorder() {
+    showToast('Added to basket');
+  }
+
+  let _reorderSubIdx = 0;
+
+  function buildPickSub() {
+    const rows = ALL_SUBS.map((sub, idx) => `
+      <div class="option-row" style="flex-direction:column;align-items:flex-start;gap:4px;cursor:pointer" onclick="selectSubForReorder(${idx})">
+        <span class="option-row-label">${sub.label}</span>
+        <span class="option-row-note">${sub.products.map(p => p.name).join(', ')} · Every ${sub.frequency} weeks · Next ${sub.nextDelivery}</span>
+      </div>`).join('');
+    return `${SUB_TOP_ROW}
+      <div class="sub-sheet-title">Add to subscription</div>
+      <div style="font-size:13px;color:#AEAEB2;margin:6px 0 20px;line-height:1.5">Choose which subscription to add Black Edition Ramen to.</div>
+      ${rows}
+      <button class="sub-sheet-btn secondary" onclick="closeSubSheet()">Cancel</button>`;
+  }
+
+  function selectSubForReorder(idx) {
+    _reorderSubIdx = idx;
+    const panel = document.getElementById('sub-sheet-panel');
+    if (panel) panel.innerHTML = buildAddToSubConfirm(idx);
+  }
+
+  function buildAddToSubConfirm(idx) {
+    const sub = ALL_SUBS[idx];
+    const active = REORDER_DATA.varieties.filter(v => v.qty > 0);
+    const varietyList = active.map(v => `<div style="font-size:13px;color:#1C1C1E;padding:3px 0">${v.name} × ${v.qty}</div>`).join('');
+    return `${SUB_TOP_ROW}
+      <div class="sub-sheet-title">Confirm</div>
+      <div style="font-size:13px;color:#AEAEB2;margin:6px 0 20px;line-height:1.5">Black Edition Ramen will be added to ${sub.label} and included in every delivery going forward.</div>
+      <div class="sub-price-breakdown" style="margin-bottom:20px">
+        <div class="sub-price-row">
+          <span class="sub-price-label">Subscription</span>
+          <span class="sub-price-val">${sub.label}</span>
+        </div>
+        <div class="sub-price-row">
+          <span class="sub-price-label">Frequency</span>
+          <span class="sub-price-val">Every ${sub.frequency} weeks</span>
+        </div>
+        <div class="sub-price-row">
+          <span class="sub-price-label">Next delivery</span>
+          <span class="sub-price-val">${sub.nextDelivery}</span>
+        </div>
+        <div class="sub-price-divider"></div>
+        ${varietyList}
+      </div>
+      <button class="sub-sheet-btn" onclick="confirmAddToSub()">Confirm</button>
+      <button class="sub-sheet-btn secondary" onclick="closeSubSheet()">Cancel</button>`;
+  }
+
+  function confirmAddToSub() {
+    closeSubSheet();
+    showToast('Added to subscription');
+  }
+
   const _HOME_MONTH_MAP = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
 
   function renderHomeSubCard() {
@@ -1899,7 +2157,9 @@
       case 'address':       return buildAddress();
       case 'payment':       return buildPayment();
       case 'cancel':        return buildCancel();
-      case 'add-product':   return buildAddProduct();
+      case 'add-product':       return buildAddProduct();
+      case 'reorder-varieties': return buildReorderVarieties();
+      case 'add-to-sub':        return buildPickSub();
       default: return null;
     }
   }
@@ -2218,6 +2478,7 @@
   }
 
   renderAllSubs();
+  renderReorderVarieties();
   renderHomeSubCard();
 </script>
 </body>
