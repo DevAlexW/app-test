@@ -109,6 +109,16 @@
     .streak-nudge-text { font-size: 14px; font-weight: 600; color: #fff; }
     .streak-nudge-sub { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
     .streak-nudge-right { font-size: 11px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 3px; }
+    .home-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1C1C1E; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; letter-spacing: 0.04em; }
+    .home-sub-card { background: #fff; border: 1.5px solid #E5E5EA; border-radius: 16px; padding: 16px 18px; cursor: pointer; transition: border-color 0.15s; }
+    .home-sub-card:hover { border-color: #1C1C1E; }
+    .home-sub-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .home-sub-card-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #AEAEB2; }
+    .home-sub-card-days { font-size: 12px; font-weight: 600; color: #6B6B6B; }
+    .home-sub-card-mid { display: flex; align-items: center; justify-content: space-between; }
+    .home-sub-card-date { font-size: 17px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.3px; }
+    .home-sub-card-warning { display: flex; align-items: center; gap: 6px; margin-top: 12px; background: #FFF7ED; border-radius: 8px; padding: 8px 10px; font-size: 12px; font-weight: 500; color: #92400E; line-height: 1.4; }
+    .home-sub-card-locked { display: flex; align-items: center; gap: 6px; margin-top: 12px; background: #F5F5F5; border-radius: 8px; padding: 8px 10px; font-size: 12px; font-weight: 500; color: #6B6B6B; line-height: 1.4; }
 
     /* ════════════════════════
        TRACKER
@@ -595,8 +605,8 @@
     Dashboard
   </a>
   <div style="font-family:'Inter',sans-serif;padding-left:4px;">
-    <div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-bottom:3px;">Subscription Management — Rev 1 / Single Subscription</div>
-    <div style="font-size:11px;color:#575759;line-height:1.5;max-width:200px;">Management for customers with one subscription (one or more products)</div>
+    <div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-bottom:3px;">Master — Rev 1 / Single Subscription</div>
+    <div style="font-size:11px;color:#575759;line-height:1.5;max-width:200px;">Master app experience for customers with one active subscription</div>
   </div>
 </div>
 
@@ -617,6 +627,7 @@
           <h1>Good morning, Alex 👋</h1>
           <p>Wednesday, 6 August 2026</p>
         </div>
+        <div class="home-avatar" onclick="showScreen('profile')">AW</div>
       </div>
       <div class="streak-nudge" onclick="showScreen('tracker')">
         <div class="streak-nudge-left">
@@ -633,6 +644,7 @@
           </svg>
         </div>
       </div>
+      <div id="home-sub-card" style="margin-bottom:16px"></div>
     </div>
   </div>
 
@@ -832,8 +844,49 @@
   </div>
 
   <!-- PROFILE -->
+  <!-- ORDERS -->
+  <div id="screen-orders" class="screen">
+    <div class="screen-scroll">
+      <div class="screen-header">
+        <div class="screen-title">Order history</div>
+      </div>
+      <div class="section-label">Recent orders</div>
+      <div class="settings-group">
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;width:100%">
+            <span style="font-size:14px;font-weight:600;color:#1C1C1E">Black Edition Powder</span>
+            <span style="font-size:13px;font-weight:600;color:#1C1C1E">£164.70</span>
+          </div>
+          <div style="font-size:12px;color:#AEAEB2">Subscription · 26 Jul 2026</div>
+          <div style="font-size:11px;font-weight:500;color:#16A34A;background:#F0FDF0;padding:2px 8px;border-radius:20px">Delivered</div>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;width:100%">
+            <span style="font-size:14px;font-weight:600;color:#1C1C1E">Black Edition Powder</span>
+            <span style="font-size:13px;font-weight:600;color:#1C1C1E">£164.70</span>
+          </div>
+          <div style="font-size:12px;color:#AEAEB2">Subscription · 28 Jun 2026</div>
+          <div style="font-size:11px;font-weight:500;color:#16A34A;background:#F0FDF0;padding:2px 8px;border-radius:20px">Delivered</div>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;width:100%">
+            <span style="font-size:14px;font-weight:600;color:#1C1C1E">Black Edition Powder</span>
+            <span style="font-size:13px;font-weight:600;color:#1C1C1E">£164.70</span>
+          </div>
+          <div style="font-size:12px;color:#AEAEB2">Subscription · 31 May 2026</div>
+          <div style="font-size:11px;font-weight:500;color:#16A34A;background:#F0FDF0;padding:2px 8px;border-radius:20px">Delivered</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
   <div id="screen-profile" class="screen">
     <div class="screen-scroll">
+      <div class="screen-header">
+        <div class="back-btn" onclick="showScreen('home')"><svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M9 1L1 8.5L9 16" stroke="#1C1C1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="screen-title">Profile</div>
+      </div>
       <div class="profile-header">
         <div class="profile-avatar">A</div>
         <div><div class="profile-name">Alex Woodward</div><div class="profile-email">alex@huel.com</div></div>
@@ -952,9 +1005,9 @@
       <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="6" width="18" height="13" rx="3" fill="currentColor"/><path d="M6 6V5C6 3.343 7.343 2 9 2H13C14.657 2 16 3.343 16 5V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 13H15M7 16H11" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg><div class="nav-dot"></div></div>
       <span class="nav-label">Subscriptions</span>
     </div>
-    <div class="nav-item" id="nav-profile" onclick="showScreen('profile')">
-      <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" fill="currentColor"/><path d="M3 20C3 16.686 6.686 14 11 14C15.314 14 19 16.686 19 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-      <span class="nav-label">Profile</span>
+    <div class="nav-item" id="nav-orders" onclick="showScreen('orders')">
+      <div class="nav-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="2" width="14" height="18" rx="2" fill="currentColor"/><path d="M7 7H15M7 11H15M7 15H11" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <span class="nav-label">Orders</span>
     </div>
   </nav>
 
@@ -973,7 +1026,7 @@
     'tracker':        'nav-tracker',
     'tracker-detail': 'nav-tracker',
     'subscriptions':  'nav-subscriptions',
-    'profile':        'nav-profile',
+    'orders':         'nav-orders',
   };
 
   const MY_PRODUCT = { name: 'Huel Black Edition', shortName: 'Black Edition', emoji: '⚫' };
@@ -1038,6 +1091,7 @@
       const dot = document.querySelector('#nav-subscriptions .nav-dot');
       if (dot) dot.style.display = 'none';
     }
+    if (name === 'home') renderHomeSubCard();
   }
 
   // ── Log sheet ──
@@ -1460,6 +1514,39 @@
     overlay.classList.add('visible');
   }
 
+  const _HOME_MONTH_MAP = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+
+  function renderHomeSubCard() {
+    const el = document.getElementById('home-sub-card');
+    if (!el) return;
+    const parts = SUB_DATA.nextDelivery.split(' ');
+    const deliveryDate = new Date(2026, _HOME_MONTH_MAP[parts[2]], parseInt(parts[1]));
+    deliveryDate.setHours(0,0,0,0);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const daysUntil = Math.round((deliveryDate - today) / 86400000);
+    let daysLabel, banner = '';
+    if (daysUntil <= 1) {
+      daysLabel = daysUntil === 1 ? 'Tomorrow' : 'Today';
+      banner = `<div class="home-sub-card-locked">🔒 Editing closed for this delivery</div>`;
+    } else if (daysUntil === 2) {
+      daysLabel = 'in 2 days';
+      banner = `<div class="home-sub-card-warning">⚠ Last chance to edit — locks tomorrow</div>`;
+    } else {
+      daysLabel = `in ${daysUntil} days`;
+    }
+    el.innerHTML = `<div class="home-sub-card" onclick="showScreen('subscriptions')">
+      <div class="home-sub-card-top">
+        <span class="home-sub-card-label">Next delivery</span>
+        <span class="home-sub-card-days">${daysLabel}</span>
+      </div>
+      <div class="home-sub-card-mid">
+        <span class="home-sub-card-date">${SUB_DATA.nextDelivery}</span>
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1L7 7L1 13" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      ${banner}
+    </div>`;
+  }
+
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = '✓ ' + msg;
@@ -1825,6 +1912,7 @@
   }
 
   renderSubProducts();
+  renderHomeSubCard();
 </script>
 </body>
 </html>
