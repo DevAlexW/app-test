@@ -890,55 +890,7 @@
   <!-- PROFILE -->
   <!-- LOYALTY -->
   <div id="screen-loyalty" class="screen">
-    <div class="screen-scroll">
-      <div class="screen-header">
-        <div class="screen-title">Huel+</div>
-      </div>
-      <div style="background:#1C1C1E;border-radius:20px;padding:24px;margin-bottom:20px">
-        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px">Your points</div>
-        <div style="font-size:48px;font-weight:700;color:#fff;letter-spacing:-1px;line-height:1">100</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px">points available to redeem</div>
-      </div>
-      <div class="section-label">Redeem rewards</div>
-      <div class="settings-group" style="margin-bottom:20px">
-        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
-          <div style="display:flex;justify-content:space-between;width:100%">
-            <span style="font-size:14px;font-weight:600;color:#1C1C1E">£5 off your next order</span>
-            <span style="font-size:12px;font-weight:600;color:#1C1C1E">50 pts</span>
-          </div>
-          <span style="font-size:12px;color:#AEAEB2">Applied as a discount at checkout</span>
-        </div>
-        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
-          <div style="display:flex;justify-content:space-between;width:100%">
-            <span style="font-size:14px;font-weight:600;color:#1C1C1E">£10 off your next order</span>
-            <span style="font-size:12px;font-weight:600;color:#1C1C1E">100 pts</span>
-          </div>
-          <span style="font-size:12px;color:#AEAEB2">Applied as a discount at checkout</span>
-        </div>
-        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px;opacity:0.4">
-          <div style="display:flex;justify-content:space-between;width:100%">
-            <span style="font-size:14px;font-weight:600;color:#1C1C1E">Free product bundle</span>
-            <span style="font-size:12px;font-weight:600;color:#1C1C1E">250 pts</span>
-          </div>
-          <span style="font-size:12px;color:#AEAEB2">Not enough points yet</span>
-        </div>
-      </div>
-      <div class="section-label">How to earn</div>
-      <div class="settings-group" style="margin-bottom:20px">
-        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
-          <span style="font-size:14px;font-weight:600;color:#1C1C1E">Every subscription delivery</span>
-          <span style="font-size:12px;color:#AEAEB2">Earn 10 points per £1 spent</span>
-        </div>
-        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
-          <span style="font-size:14px;font-weight:600;color:#1C1C1E">Refer a friend</span>
-          <span style="font-size:12px;color:#AEAEB2">Earn 50 points when they place their first order</span>
-        </div>
-        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
-          <span style="font-size:14px;font-weight:600;color:#1C1C1E">Log your Huel daily</span>
-          <span style="font-size:12px;color:#AEAEB2">Earn 5 points per day you log</span>
-        </div>
-      </div>
-    </div>
+    <div id="loyalty-content" class="screen-scroll"></div>
   </div>
 
   <!-- REORDER -->
@@ -1243,6 +1195,7 @@
       if (dot) dot.style.display = 'none';
     }
     if (name === 'home') renderHomeSubCard();
+    if (name === 'loyalty') renderLoyaltyScreen();
   }
 
   // ── Log sheet ──
@@ -1746,6 +1699,149 @@
     showToast('Added to subscription');
   }
 
+  const REWARDS = [
+    { id: 'gbp5',    label: '£5 off your next order',  pts: 50,  desc: 'A £5 discount applied automatically to your next subscription delivery.', type: 'discount' },
+    { id: 'appletv', label: '1 month Apple TV+',        pts: 75,  desc: 'Stream unlimited TV and movies on Apple TV+ for a month, on us.',          type: 'code', code: 'ATVM-HU3L-XK29', hint: 'Redeem at tv.apple.com/redeem' },
+    { id: 'gbp10',   label: '£10 off your next order',  pts: 100, desc: 'A £10 discount applied automatically to your next subscription delivery.', type: 'discount' },
+    { id: 'bundle',  label: 'Free product bundle',       pts: 250, desc: 'A curated bundle of our favourite Huel products, delivered free.',         type: 'physical' },
+  ];
+  let _activeRewards = [];
+  let _usedRewards = [];
+  let _loyaltyPts = 100;
+
+  function renderLoyaltyScreen() {
+    const el = document.getElementById('loyalty-content');
+    if (!el) return;
+    const activeSection = _activeRewards.length ? `
+      <div class="section-label">Active rewards</div>
+      <div class="settings-group" style="margin-bottom:20px">
+        ${_activeRewards.map(r => `
+          <div class="settings-row" style="padding:14px 16px;cursor:pointer" onclick="openSubSheet('reward-use','${r.id}')">
+            <span style="font-size:14px;font-weight:600;color:#1C1C1E;flex:1">${r.label}</span>
+            <span style="font-size:13px;font-weight:600;color:#007AFF">${r.type === 'code' ? 'View code' : 'Apply'} →</span>
+          </div>`).join('')}
+      </div>` : '';
+    const availableRows = REWARDS.map(r => {
+      if (_activeRewards.find(a => a.id === r.id)) return '';
+      const locked = _loyaltyPts < r.pts;
+      return `
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px;${locked ? 'opacity:0.4;' : 'cursor:pointer;'}" ${locked ? '' : `onclick="openSubSheet('reward-detail','${r.id}')"`}>
+          <div style="display:flex;justify-content:space-between;width:100%">
+            <span style="font-size:14px;font-weight:600;color:#1C1C1E">${r.label}</span>
+            <span style="font-size:12px;font-weight:600;color:#1C1C1E">${r.pts} pts</span>
+          </div>
+          <span style="font-size:12px;color:#AEAEB2">${locked ? 'Not enough points yet' : 'Tap to view'}</span>
+        </div>`;
+    }).join('');
+    el.innerHTML = `
+      <div class="screen-header"><div class="screen-title">Huel+</div></div>
+      <div style="background:#1C1C1E;border-radius:20px;padding:24px;margin-bottom:20px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px">Your points</div>
+        <div style="font-size:48px;font-weight:700;color:#fff;letter-spacing:-1px;line-height:1">${_loyaltyPts}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px">points available to redeem</div>
+      </div>
+      ${activeSection}
+      <div class="section-label">Redeem rewards</div>
+      <div class="settings-group" style="margin-bottom:20px">${availableRows}</div>
+      <div class="section-label">How to earn</div>
+      <div class="settings-group" style="margin-bottom:20px">
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
+          <span style="font-size:14px;font-weight:600;color:#1C1C1E">Every subscription delivery</span>
+          <span style="font-size:12px;color:#AEAEB2">Earn 10 points per £1 spent</span>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
+          <span style="font-size:14px;font-weight:600;color:#1C1C1E">Refer a friend</span>
+          <span style="font-size:12px;color:#AEAEB2">Earn 50 points when they place their first order</span>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px">
+          <span style="font-size:14px;font-weight:600;color:#1C1C1E">Log your Huel daily</span>
+          <span style="font-size:12px;color:#AEAEB2">Earn 5 points per day you log</span>
+        </div>
+      </div>
+      ${_usedRewards.length ? `
+      <div class="section-label">Past rewards</div>
+      <div class="settings-group" style="margin-bottom:20px">
+        ${_usedRewards.map(r => `
+          <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px;padding:14px 16px;opacity:0.5">
+            <div style="display:flex;justify-content:space-between;width:100%">
+              <span style="font-size:14px;font-weight:600;color:#1C1C1E">${r.label}</span>
+              <span style="font-size:12px;font-weight:500;color:#AEAEB2">${r.pts} pts</span>
+            </div>
+            <span style="font-size:12px;color:#AEAEB2">Used ${r.usedDate}</span>
+          </div>`).join('')}
+      </div>` : ''}`;
+  }
+
+  function buildRewardDetail(id) {
+    const r = REWARDS.find(x => x.id === id);
+    const remaining = _loyaltyPts - r.pts;
+    return `${SUB_TOP_ROW}
+      <div class="sub-sheet-title">${r.label}</div>
+      <div style="font-size:14px;color:#6B6B6B;line-height:1.6;margin-bottom:20px">${r.desc}</div>
+      <div class="sub-price-breakdown" style="margin-bottom:24px">
+        <div class="sub-price-row"><span class="sub-price-label">Points cost</span><span class="sub-price-val">${r.pts} pts</span></div>
+        <div class="sub-price-row"><span class="sub-price-label">Your balance</span><span class="sub-price-val">${_loyaltyPts} pts</span></div>
+        <div class="sub-price-divider"></div>
+        <div class="sub-price-row"><span class="sub-price-label">Remaining after</span><span class="sub-price-val">${remaining} pts</span></div>
+      </div>
+      <button class="sub-sheet-btn" onclick="claimReward('${r.id}')">Redeem</button>
+      <button class="sub-sheet-btn secondary" onclick="closeSubSheet()">Cancel</button>`;
+  }
+
+  function buildRewardUse(id) {
+    const r = REWARDS.find(x => x.id === id);
+    if (r.type === 'code') {
+      return `${SUB_TOP_ROW}
+        <div class="sub-sheet-title">${r.label}</div>
+        <div style="font-size:13px;color:#6B6B6B;line-height:1.5;margin-bottom:20px">${r.desc}</div>
+        <div style="font-size:13px;font-weight:600;color:#1C1C1E;margin-bottom:8px">Redemption code</div>
+        <div style="background:#F7F7F7;border:1.5px solid #E5E5EA;border-radius:12px;padding:14px 16px;margin-bottom:6px">
+          <div style="font-size:17px;font-weight:700;color:#1C1C1E;letter-spacing:0.1em;font-family:monospace;text-align:center">${r.code}</div>
+        </div>
+        <div style="font-size:12px;color:#AEAEB2;text-align:center;margin-bottom:24px">${r.hint}</div>
+        <button class="sub-sheet-btn" onclick="copyRewardCode('${r.code}')">Copy code</button>
+        <button class="sub-sheet-btn secondary" onclick="markRewardUsed('${r.id}')">Mark as used</button>
+        <button class="sub-sheet-btn ghost" onclick="closeSubSheet()" style="background:none;border:none;color:#AEAEB2;font-size:13px;font-weight:500;margin-top:4px;cursor:pointer;width:100%;text-align:center">Close</button>`;
+    }
+    return `${SUB_TOP_ROW}
+      <div class="sub-sheet-title">${r.label}</div>
+      <div style="font-size:13px;color:#6B6B6B;line-height:1.5;margin-bottom:24px">${r.desc}</div>
+      <button class="sub-sheet-btn" onclick="applyDiscount('${r.id}')">Apply to next order</button>
+      <button class="sub-sheet-btn secondary" onclick="closeSubSheet()">Close</button>`;
+  }
+
+  function claimReward(id) {
+    const r = REWARDS.find(x => x.id === id);
+    _loyaltyPts -= r.pts;
+    _activeRewards.push(r);
+    closeSubSheet();
+    renderLoyaltyScreen();
+    showToast('Reward claimed');
+  }
+
+  function applyDiscount(id) {
+    const r = _activeRewards.find(x => x.id === id);
+    _activeRewards = _activeRewards.filter(x => x.id !== id);
+    _usedRewards.unshift({ ...r, usedDate: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) });
+    closeSubSheet();
+    renderLoyaltyScreen();
+    showToast('Discount applied to your next delivery');
+  }
+
+  function markRewardUsed(id) {
+    const r = _activeRewards.find(x => x.id === id);
+    _activeRewards = _activeRewards.filter(x => x.id !== id);
+    _usedRewards.unshift({ ...r, usedDate: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) });
+    closeSubSheet();
+    renderLoyaltyScreen();
+    showToast('Reward marked as used');
+  }
+
+  function copyRewardCode(code) {
+    navigator.clipboard.writeText(code).catch(() => {});
+    showToast('Code copied to clipboard');
+  }
+
   const _HOME_MONTH_MAP = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
 
   function renderHomeSubCard() {
@@ -1827,6 +1923,8 @@
       case 'add-product':      return buildAddProduct();
       case 'reorder-varieties': return buildReorderVarieties();
       case 'add-to-sub':        return buildAddToSub();
+      case 'reward-detail':     return buildRewardDetail(data);
+      case 'reward-use':        return buildRewardUse(data);
       default: return null;
     }
   }
@@ -2148,6 +2246,7 @@
   renderSubProducts();
   renderHomeSubCard();
   renderReorderVarieties();
+  renderLoyaltyScreen();
 </script>
 </body>
 </html>
