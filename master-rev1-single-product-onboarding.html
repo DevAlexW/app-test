@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Huel Habit Tracker — Rev 1 Single Product</title>
+  <title>Huel Habit Tracker — Rev 1 Single Product Onboarding</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
@@ -622,6 +622,89 @@
     .date-cal-selected { background: #1C1C1E !important; color: #fff !important; font-weight: 700; }
     #toast { position:absolute; bottom:96px; left:50%; transform:translateX(-50%) translateY(10px); background:#16A34A; color:#fff; font-size:13px; font-weight:500; padding:10px 18px; border-radius:20px; white-space:nowrap; opacity:0; transition:opacity 0.25s, transform 0.25s; pointer-events:none; z-index:9999; }
     #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* ════════════════════════
+       ONBOARDING
+    ════════════════════════ */
+    .ob-scroll { flex: 1; overflow-y: auto; padding: 48px 24px 36px; display: flex; flex-direction: column; }
+    .ob-scroll::-webkit-scrollbar { display: none; }
+    .ob-progress { display: flex; gap: 5px; margin-bottom: 28px; }
+    .ob-progress-step { flex: 1; height: 3px; border-radius: 2px; background: #E5E5EA; }
+    .ob-progress-step.active { background: #1C1C1E; }
+    .ob-back { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: #AEAEB2; cursor: pointer; margin-bottom: 20px; width: fit-content; transition: color 0.12s; border: none; background: none; font-family: 'Inter', sans-serif; padding: 0; }
+    .ob-back:hover { color: #1C1C1E; }
+    .ob-eyebrow { font-size: 11px; font-weight: 600; color: #AEAEB2; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .ob-heading { font-size: 26px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.6px; line-height: 1.2; margin-bottom: 8px; }
+    .ob-sub { font-size: 14px; color: #6B6B6B; line-height: 1.5; margin-bottom: 24px; }
+    .ob-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option { padding: 16px 18px; border-radius: 16px; border: 1.5px solid #E5E5EA; cursor: pointer; display: flex; align-items: center; gap: 14px; transition: background 0.1s, border-color 0.15s; -webkit-tap-highlight-color: transparent; }
+    .quiz-option:hover { background: #F5F2EC; border-color: #C7C7CC; }
+    .quiz-option.selected { background: #F0FDF4; border-color: #16A34A; }
+    .quiz-option-emoji { font-size: 22px; width: 32px; text-align: center; flex-shrink: 0; }
+    .quiz-option-text { flex: 1; }
+    .quiz-option-label { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+    .quiz-option-sub { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+    .quiz-check { width: 22px; height: 22px; border-radius: 50%; background: #16A34A; display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0; transform: scale(0.6); transition: opacity 0.15s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1); }
+    .quiz-option.selected .quiz-check { opacity: 1; transform: scale(1); }
+    .ob-continue { width: 100%; padding: 15px; background: #1C1C1E; color: #fff; border: none; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: default; font-family: 'Inter', sans-serif; opacity: 0.28; transition: opacity 0.2s; margin-top: 24px; letter-spacing: -0.2px; }
+    .ob-continue.ready { opacity: 1; cursor: pointer; }
+    .ob-link { font-size: 14px; font-weight: 500; color: #AEAEB2; text-align: center; cursor: pointer; margin-top: 14px; transition: color 0.12s; }
+    .ob-link:hover { color: #1C1C1E; }
+    /* Welcome */
+    .ob-welcome-wrap { flex: 1; display: flex; flex-direction: column; padding: 60px 24px 40px; }
+    .ob-logo { font-size: 22px; font-weight: 900; color: #1C1C1E; letter-spacing: 1px; margin-bottom: auto; text-transform: uppercase; }
+    .ob-welcome-heading { font-size: 36px; font-weight: 800; color: #1C1C1E; letter-spacing: -1px; line-height: 1.1; margin-bottom: 12px; }
+    .ob-welcome-sub { font-size: 15px; color: #6B6B6B; line-height: 1.6; margin-bottom: 36px; }
+    /* Sign up */
+    .social-btn { width: 100%; padding: 14px; border-radius: 14px; border: 1.5px solid #E5E5EA; background: #fff; font-size: 15px; font-weight: 600; color: #1C1C1E; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.12s; margin-bottom: 10px; }
+    .social-btn:hover { background: #F5F2EC; }
+    .social-btn.apple { background: #1C1C1E; color: #fff; border-color: #1C1C1E; }
+    .social-btn.apple:hover { opacity: 0.88; background: #1C1C1E; }
+    .ob-divider { display: flex; align-items: center; gap: 12px; margin: 4px 0 16px; }
+    .ob-divider-line { flex: 1; height: 1px; background: #E5E5EA; }
+    .ob-divider-label { font-size: 12px; color: #AEAEB2; font-weight: 500; }
+    .ob-input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1.5px solid #E5E5EA; font-size: 15px; font-family: 'Inter', sans-serif; color: #1C1C1E; outline: none; transition: border-color 0.15s; margin-bottom: 10px; background: #fff; }
+    .ob-input:focus { border-color: #1C1C1E; }
+    .ob-input::placeholder { color: #C7C7CC; }
+    .ob-legal { font-size: 11px; color: #AEAEB2; text-align: center; line-height: 1.6; margin-top: 14px; }
+    .ob-legal a { color: #1C1C1E; text-decoration: none; font-weight: 500; }
+    /* Processing */
+    .ob-center-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; text-align: center; }
+    .ob-spinner { width: 52px; height: 52px; border-radius: 50%; border: 3px solid #E5E5EA; border-top-color: #1C1C1E; animation: obSpin 0.75s linear infinite; margin-bottom: 24px; }
+    @keyframes obSpin { to { transform: rotate(360deg); } }
+    .ob-center-title { font-size: 22px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .ob-center-sub { font-size: 14px; color: #AEAEB2; line-height: 1.6; margin-bottom: 32px; max-width: 260px; }
+    /* Recommendation */
+    .ob-rec-card { background: #F5F2EC; border-radius: 20px; padding: 22px; margin-bottom: 16px; }
+    .ob-rec-badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: #16A34A; color: #fff; padding: 3px 9px; border-radius: 20px; margin-bottom: 10px; }
+    .ob-rec-emoji { font-size: 44px; display: block; margin-bottom: 10px; }
+    .ob-rec-name { font-size: 20px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.4px; margin-bottom: 6px; }
+    .ob-rec-desc { font-size: 13px; color: #6B6B6B; line-height: 1.5; margin-bottom: 14px; }
+    .ob-rec-benefits { display: flex; flex-direction: column; gap: 8px; }
+    .ob-rec-benefit { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #1C1C1E; }
+    .ob-rec-dot { width: 6px; height: 6px; border-radius: 50%; background: #16A34A; flex-shrink: 0; }
+    /* Plan setup */
+    .ob-freq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .ob-freq-card { padding: 14px 12px; border-radius: 14px; border: 1.5px solid #E5E5EA; cursor: pointer; text-align: center; transition: background 0.1s, border-color 0.15s; }
+    .ob-freq-card:hover { background: #F5F2EC; border-color: #C7C7CC; }
+    .ob-freq-card.selected { background: #F0FDF4; border-color: #16A34A; }
+    .ob-freq-main { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+    .ob-freq-note { font-size: 11px; color: #AEAEB2; margin-top: 3px; }
+    .ob-freq-card.selected .ob-freq-note { color: #16A34A; }
+    .ob-qty-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #F0F0F0; margin-bottom: 16px; }
+    .ob-qty-label { font-size: 15px; font-weight: 500; color: #1C1C1E; }
+    .ob-qty-sub { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+    .ob-price-summary { background: #F5F2EC; border-radius: 14px; padding: 14px 16px; margin-bottom: 4px; }
+    .ob-price-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+    .ob-price-key { color: #AEAEB2; }
+    .ob-price-val { font-weight: 500; color: #1C1C1E; }
+    .ob-price-saving { color: #16A34A; font-weight: 600; }
+    .ob-price-divider { height: 1px; background: #E5E5EA; margin: 8px 0 6px; }
+    .ob-price-total-key { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+    .ob-price-total-val { font-size: 16px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.3px; }
+    /* Checkout / Thank you */
+    .ob-checkout-icon { width: 72px; height: 72px; border-radius: 20px; background: #1C1C1E; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 32px; }
+    .ob-thankyou-icon { width: 80px; height: 80px; border-radius: 50%; background: #D1FAE5; display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
@@ -632,8 +715,8 @@
     Dashboard
   </a>
   <div style="font-family:'Inter',sans-serif;padding-left:4px;">
-    <div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-bottom:3px;">Master — Rev 1 / Single Subscription</div>
-    <div style="font-size:11px;color:#575759;line-height:1.5;max-width:200px;">Master app experience for customers with one active subscription</div>
+    <div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-bottom:3px;">Master — Rev 1 / Single Product Onboarding</div>
+    <div style="font-size:11px;color:#575759;line-height:1.5;max-width:200px;">New customer onboarding — sign up, quiz, recommendation and checkout handoff</div>
   </div>
 </div>
 
@@ -646,8 +729,337 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════
+       ONBOARDING
+  ══════════════════════════════ -->
+
+  <!-- WELCOME -->
+  <div id="screen-onboarding-welcome" class="screen active">
+    <div class="ob-welcome-wrap">
+      <div class="ob-logo">Huel</div>
+      <div>
+        <div class="ob-welcome-heading">Fuel your life,<br>your way.</div>
+        <div class="ob-welcome-sub">Complete nutrition built around your goals. Let's find the right fit for you in under a minute.</div>
+        <button class="ob-continue ready" onclick="showScreen('onboarding-signup')">Get started</button>
+        <div class="ob-link" onclick="showScreen('home')">I already have an account</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIGN UP -->
+  <div id="screen-onboarding-signup" class="screen">
+    <div class="ob-scroll">
+      <button class="ob-back" onclick="showScreen('onboarding-welcome')">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6L6 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <div class="ob-heading">Create your account</div>
+      <div class="ob-sub">Join thousands of people fuelling smarter.</div>
+      <button class="social-btn apple" onclick="setUserName('Alex');showScreen('onboarding-q1')"
+        <svg width="16" height="19" viewBox="0 0 16 19" fill="currentColor"><path d="M13.15 9.93c-.02-2.03 1.65-3.01 1.73-3.06-.95-1.39-2.42-1.58-2.95-1.6-1.26-.13-2.46.75-3.1.75-.64 0-1.63-.73-2.68-.71-1.38.02-2.66.8-3.37 2.04-1.44 2.49-.37 6.17 1.04 8.19.69.99 1.5 2.09 2.57 2.05 1.03-.04 1.42-.66 2.67-.66s1.6.66 2.69.64c1.11-.02 1.82-1.01 2.5-2 .79-1.14 1.12-2.25 1.13-2.31-.02-.01-2.21-.86-2.23-3.33zm-2.08-6.12c.58-.7.96-1.67.86-2.64-.83.04-1.84.55-2.43 1.25-.53.61-1 1.59-.86 2.53.92.07 1.86-.47 2.43-1.14z"/></svg>
+        Continue with Apple
+      </button>
+      <button class="social-btn" onclick="setUserName('Alex');showScreen('onboarding-q1')"
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2a10.34 10.34 0 00-.164-1.84H9v3.48h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908C16.658 14.013 17.64 11.706 17.64 9.2z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958l3.007 2.332C4.672 5.164 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+      <div class="ob-divider"><div class="ob-divider-line"></div><div class="ob-divider-label">or</div><div class="ob-divider-line"></div></div>
+      <input class="ob-input" type="text" id="signup-name" placeholder="First name (e.g. Alex)" oninput="captureUserName()">
+      <input class="ob-input" type="email" placeholder="Email address">
+      <input class="ob-input" type="password" placeholder="Password">
+      <button class="ob-continue ready" onclick="showScreen('onboarding-q1')">Continue with email</button>
+      <div class="ob-legal">By continuing you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
+    </div>
+  </div>
+
+  <!-- QUIZ Q1 — Goal -->
+  <div id="screen-onboarding-q1" class="screen">
+    <div class="ob-scroll">
+      <div class="ob-progress">
+        <div class="ob-progress-step active"></div>
+        <div class="ob-progress-step"></div>
+        <div class="ob-progress-step"></div>
+        <div class="ob-progress-step"></div>
+      </div>
+      <button class="ob-back" onclick="showScreen('onboarding-signup')">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6L6 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <div class="ob-eyebrow">Question 1 of 4</div>
+      <div class="ob-heading">What's your main goal?</div>
+      <div class="ob-sub">We'll use this to recommend the right Huel for you.</div>
+      <div class="ob-options">
+        <div class="quiz-option" onclick="selectQuizOption('q1','weight',this)">
+          <div class="quiz-option-emoji">⚖️</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Manage my weight</div><div class="quiz-option-sub">Lose or maintain with complete nutrition</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q1','muscle',this)">
+          <div class="quiz-option-emoji">💪</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Build muscle</div><div class="quiz-option-sub">High protein to fuel your training</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q1','convenience',this)">
+          <div class="quiz-option-emoji">⚡</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Convenient nutrition</div><div class="quiz-option-sub">Quick, complete meals that fit my life</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q1','health',this)">
+          <div class="quiz-option-emoji">🥗</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Eat more healthily</div><div class="quiz-option-sub">Better nutrition without the effort</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+      <button class="ob-continue" id="q1-btn" onclick="showScreen('onboarding-q2')">Continue</button>
+    </div>
+  </div>
+
+  <!-- QUIZ Q2 — Lifestyle -->
+  <div id="screen-onboarding-q2" class="screen">
+    <div class="ob-scroll">
+      <div class="ob-progress">
+        <div class="ob-progress-step active"></div>
+        <div class="ob-progress-step active"></div>
+        <div class="ob-progress-step"></div>
+        <div class="ob-progress-step"></div>
+      </div>
+      <button class="ob-back" onclick="showScreen('onboarding-q1')">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6L6 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <div class="ob-eyebrow">Question 2 of 4</div>
+      <div class="ob-heading">How active are you?</div>
+      <div class="ob-sub">This helps us get your nutrition balance right.</div>
+      <div class="ob-options">
+        <div class="quiz-option" onclick="selectQuizOption('q2','very',this)">
+          <div class="quiz-option-emoji">🏋️</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Very active</div><div class="quiz-option-sub">Training 4+ days a week</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q2','moderate',this)">
+          <div class="quiz-option-emoji">🚴</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Moderately active</div><div class="quiz-option-sub">Exercise 1–3 times a week</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q2','desk',this)">
+          <div class="quiz-option-emoji">💻</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Mostly desk-based</div><div class="quiz-option-sub">Office or home working, light activity</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q2','go',this)">
+          <div class="quiz-option-emoji">🏃</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Always on the go</div><div class="quiz-option-sub">Busy lifestyle, constantly moving</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+      <button class="ob-continue" id="q2-btn" onclick="showScreen('onboarding-q3')">Continue</button>
+    </div>
+  </div>
+
+  <!-- QUIZ Q3 — Dietary -->
+  <div id="screen-onboarding-q3" class="screen">
+    <div class="ob-scroll">
+      <div class="ob-progress">
+        <div class="ob-progress-step active"></div>
+        <div class="ob-progress-step active"></div>
+        <div class="ob-progress-step active"></div>
+        <div class="ob-progress-step"></div>
+      </div>
+      <button class="ob-back" onclick="showScreen('onboarding-q2')">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6L6 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <div class="ob-eyebrow">Question 3 of 4</div>
+      <div class="ob-heading">Any dietary preferences?</div>
+      <div class="ob-sub">We'll tailor your recommendation to your needs.</div>
+      <div class="ob-options">
+        <div class="quiz-option" onclick="selectQuizOption('q3','none',this)">
+          <div class="quiz-option-emoji">🍽️</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">No preference</div><div class="quiz-option-sub">I'll eat pretty much anything</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q3','highprotein',this)">
+          <div class="quiz-option-emoji">💪</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">High protein</div><div class="quiz-option-sub">Prioritising protein intake above all</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q3','lowcarb',this)">
+          <div class="quiz-option-emoji">🥩</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Low carb</div><div class="quiz-option-sub">Keeping carbohydrates to a minimum</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q3','glutenfree',this)">
+          <div class="quiz-option-emoji">🌾</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Gluten-free</div><div class="quiz-option-sub">I need to avoid gluten</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q3','nutallergy',this)">
+          <div class="quiz-option-emoji">🥜</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Nut allergy</div><div class="quiz-option-sub">I need to avoid products containing nuts</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+      <button class="ob-continue" id="q3-btn" onclick="showScreen('onboarding-q4')">Continue</button>
+    </div>
+  </div>
+
+  <!-- QUIZ Q4 — Meals -->
+  <div id="screen-onboarding-q4" class="screen">
+    <div class="ob-scroll">
+      <div class="ob-progress">
+        <div class="ob-progress-step active"></div>
+        <div class="ob-progress-step active"></div>
+        <div class="ob-progress-step active"></div>
+        <div class="ob-progress-step active"></div>
+      </div>
+      <button class="ob-back" onclick="showScreen('onboarding-q3')">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6L6 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <div class="ob-eyebrow">Question 4 of 4</div>
+      <div class="ob-heading">How many meals would you replace?</div>
+      <div class="ob-sub">This helps us work out the right delivery size for you.</div>
+      <div class="ob-options">
+        <div class="quiz-option" onclick="selectQuizOption('q4','one',this)">
+          <div class="quiz-option-emoji">☀️</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">1 meal a day</div><div class="quiz-option-sub">Usually breakfast or lunch</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q4','two',this)">
+          <div class="quiz-option-emoji">🌅</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">2 meals a day</div><div class="quiz-option-sub">Morning and midday sorted</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q4','three',this)">
+          <div class="quiz-option-emoji">🔥</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">3+ meals a day</div><div class="quiz-option-sub">Huel is a big part of my diet</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q4','snack',this)">
+          <div class="quiz-option-emoji">⚡</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Just snacks</div><div class="quiz-option-sub">Topping up between meals</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="quiz-option" onclick="selectQuizOption('q4','unsure',this)">
+          <div class="quiz-option-emoji">🤷</div>
+          <div class="quiz-option-text"><div class="quiz-option-label">Not sure yet</div><div class="quiz-option-sub">I'll work it out once I've tried it</div></div>
+          <div class="quiz-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+      <button class="ob-continue" id="q4-btn" onclick="showScreen('onboarding-processing')">See my recommendation</button>
+    </div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="screen-onboarding-processing" class="screen">
+    <div class="ob-center-wrap">
+      <div class="ob-spinner"></div>
+      <div class="ob-center-title">Finding your match...</div>
+      <div class="ob-center-sub">Analysing your answers to find the perfect Huel for you.</div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div id="screen-onboarding-recommendation" class="screen">
+    <div class="ob-scroll">
+      <div class="ob-eyebrow">Your perfect match</div>
+      <div class="ob-heading" id="rec-heading">We recommend</div>
+      <div class="ob-rec-card">
+        <div class="ob-rec-badge">Recommended for you</div>
+        <div class="ob-rec-emoji">⚫</div>
+        <div class="ob-rec-name">Huel Black Edition Powder</div>
+        <div class="ob-rec-desc">Our highest protein formula. Low in sugar, high in everything your body needs — ready in under 2 minutes.</div>
+        <div class="ob-rec-benefits">
+          <div class="ob-rec-benefit"><div class="ob-rec-dot"></div>40g protein per serving</div>
+          <div class="ob-rec-benefit"><div class="ob-rec-dot"></div>Complete with 27 vitamins &amp; minerals</div>
+          <div class="ob-rec-benefit"><div class="ob-rec-dot"></div>Low sugar, low carb</div>
+        </div>
+      </div>
+      <button class="ob-continue ready" onclick="showScreen('onboarding-plan')">Build my plan</button>
+      <div class="ob-link" onclick="showScreen('home')">Explore all products instead</div>
+    </div>
+  </div>
+
+  <!-- PLAN SETUP -->
+  <div id="screen-onboarding-plan" class="screen">
+    <div class="ob-scroll">
+      <button class="ob-back" onclick="showScreen('onboarding-recommendation')">
+        <svg width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M6 1L1 6L6 11" stroke="#AEAEB2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <div class="ob-heading">Build your plan</div>
+      <div class="ob-sub">Pick your flavours first — we'll suggest the best delivery frequency based on your order.</div>
+      <div class="section-label" style="margin-bottom:4px">Flavours</div>
+      <div style="font-size:12px;color:#AEAEB2;margin-bottom:12px">1 bag = ~17 meals</div>
+      <div class="flavour-row">
+        <span class="flavour-name">Chocolate</span>
+        <div class="qty-ctrl"><button class="qty-btn" id="pfminus-0" onclick="adjPlanFlavourQty(0,-1)">−</button><span class="qty-val" id="pfval-0">1</span><button class="qty-btn" onclick="adjPlanFlavourQty(0,1)">+</button></div>
+      </div>
+      <div class="flavour-row">
+        <span class="flavour-name">Vanilla</span>
+        <div class="qty-ctrl"><button class="qty-btn" id="pfminus-1" onclick="adjPlanFlavourQty(1,-1)">−</button><span class="qty-val" id="pfval-1">1</span><button class="qty-btn" onclick="adjPlanFlavourQty(1,1)">+</button></div>
+      </div>
+      <div class="flavour-row">
+        <span class="flavour-name">Strawberry & Cream</span>
+        <div class="qty-ctrl"><button class="qty-btn" id="pfminus-2" onclick="adjPlanFlavourQty(2,-1)" disabled>−</button><span class="qty-val" id="pfval-2">0</span><button class="qty-btn" onclick="adjPlanFlavourQty(2,1)">+</button></div>
+      </div>
+      <div class="flavour-row">
+        <span class="flavour-name">Salted Caramel</span>
+        <div class="qty-ctrl"><button class="qty-btn" id="pfminus-3" onclick="adjPlanFlavourQty(3,-1)" disabled>−</button><span class="qty-val" id="pfval-3">0</span><button class="qty-btn" onclick="adjPlanFlavourQty(3,1)">+</button></div>
+      </div>
+      <div class="flavour-row">
+        <span class="flavour-name">Banana</span>
+        <div class="qty-ctrl"><button class="qty-btn" id="pfminus-4" onclick="adjPlanFlavourQty(4,-1)" disabled>−</button><span class="qty-val" id="pfval-4">0</span><button class="qty-btn" onclick="adjPlanFlavourQty(4,1)">+</button></div>
+      </div>
+      <div class="flavour-row">
+        <span class="flavour-name">Coffee Caramel</span>
+        <div class="qty-ctrl"><button class="qty-btn" id="pfminus-5" onclick="adjPlanFlavourQty(5,-1)" disabled>−</button><span class="qty-val" id="pfval-5">0</span><button class="qty-btn" onclick="adjPlanFlavourQty(5,1)">+</button></div>
+      </div>
+      <div class="section-label" style="margin-bottom:10px;margin-top:24px">Delivery frequency</div>
+      <div id="plan-freq-callout" class="sub-insight-card" style="margin-bottom:12px">
+        <div class="sub-insight-label">Our suggestion</div>
+        <div class="sub-insight-body" id="plan-freq-callout-text">Based on 2 bags, we suggest every 4 weeks — that's roughly a 5-week supply.</div>
+      </div>
+      <div class="ob-freq-grid">
+        <div class="ob-freq-card" onclick="setPlanFreq(2,this)"><div class="ob-freq-main">Every 2 weeks</div><div class="ob-freq-note" id="freq-note-2">2+ meals a day</div></div>
+        <div class="ob-freq-card selected" onclick="setPlanFreq(4,this)"><div class="ob-freq-main">Every 4 weeks</div><div class="ob-freq-note" id="freq-note-4">Around 1 meal a day</div></div>
+        <div class="ob-freq-card" onclick="setPlanFreq(6,this)"><div class="ob-freq-main">Every 6 weeks</div><div class="ob-freq-note" id="freq-note-6">4–5 meals a week</div></div>
+        <div class="ob-freq-card" onclick="setPlanFreq(8,this)"><div class="ob-freq-main">Every 8 weeks</div><div class="ob-freq-note" id="freq-note-8">2–3 meals a week</div></div>
+      </div>
+      <div class="ob-price-summary">
+        <div class="ob-price-row"><span class="ob-price-key">Subtotal</span><span class="ob-price-val" id="plan-subtotal">£109.98</span></div>
+        <div class="ob-price-row"><span class="ob-price-key">Subscriber discount (10%)</span><span class="ob-price-saving" id="plan-discount">-£11.00</span></div>
+        <div class="ob-price-row"><span class="ob-price-key">Shipping</span><span style="font-size:13px;font-weight:600;color:#16A34A">FREE</span></div>
+        <div class="ob-price-divider"></div>
+        <div class="ob-price-row"><span class="ob-price-total-key">Total per delivery</span><span class="ob-price-total-val" id="plan-total">£98.98</span></div>
+      </div>
+      <button class="ob-continue ready" style="margin-top:16px" onclick="showScreen('onboarding-checkout')">Proceed to checkout</button>
+    </div>
+  </div>
+
+  <!-- CHECKOUT HANDOFF -->
+  <div id="screen-onboarding-checkout" class="screen">
+    <div class="ob-center-wrap">
+      <div class="ob-checkout-icon">🛒</div>
+      <div class="ob-center-title">Heading to checkout</div>
+      <div class="ob-center-sub">You're being taken to Huel.com to complete your order. We'll bring you straight back when you're done.</div>
+      <button class="ob-continue ready" style="margin-top:0" onclick="showScreen('onboarding-thankyou')">Open Huel.com →</button>
+      <div class="ob-link" onclick="showScreen('onboarding-plan')">Go back</div>
+    </div>
+  </div>
+
+  <!-- THANK YOU -->
+  <div id="screen-onboarding-thankyou" class="screen">
+    <div class="ob-center-wrap">
+      <div class="ob-thankyou-icon">🎉</div>
+      <div class="ob-center-title" id="thankyou-title">You're all set!</div>
+      <div class="ob-center-sub">Your first order is confirmed. We'll send your tracking details by email. Now let's start building your habit.</div>
+      <button class="ob-continue ready" style="margin-top:0" onclick="showScreen('home')">Start tracking my Huel</button>
+    </div>
+  </div>
+
   <!-- HOME -->
-  <div id="screen-home" class="screen active">
+  <div id="screen-home" class="screen">
     <div class="screen-scroll">
       <div class="home-header">
         <div>
@@ -1157,6 +1569,111 @@
   const todaysMeals = {};
   const openSlots = new Set();
   const FAB_SCREENS = new Set(['home', 'tracker']);
+  const ONBOARDING_SCREENS = new Set(['onboarding-welcome','onboarding-signup','onboarding-q1','onboarding-q2','onboarding-q3','onboarding-q4','onboarding-processing','onboarding-recommendation','onboarding-plan','onboarding-checkout','onboarding-thankyou']);
+
+  let userName = '';
+
+  function setUserName(name) { userName = name; }
+  function captureUserName() {
+    userName = document.getElementById('signup-name').value.trim().split(' ')[0];
+  }
+
+  const quizAnswers = {};
+  let planFreq = 4;
+  const BAG_PRICE = 54.99;
+  const planFlavours = [
+    { name: 'Chocolate',         qty: 1 },
+    { name: 'Vanilla',           qty: 1 },
+    { name: 'Strawberry & Cream',qty: 0 },
+    { name: 'Salted Caramel',    qty: 0 },
+    { name: 'Banana',            qty: 0 },
+    { name: 'Coffee Caramel',    qty: 0 },
+  ];
+
+  function adjPlanFlavourQty(i, delta) {
+    planFlavours[i].qty = Math.max(0, planFlavours[i].qty + delta);
+    document.getElementById('pfval-' + i).textContent = planFlavours[i].qty;
+    document.getElementById('pfminus-' + i).disabled = planFlavours[i].qty === 0;
+    updatePlanPrice();
+    updateFreqRecommendation();
+  }
+
+  function updateFreqRecommendation() {
+    const total = planFlavours.reduce((s, f) => s + f.qty, 0);
+    if (total === 0) {
+      document.getElementById('plan-freq-callout').style.display = 'none';
+      return;
+    }
+    const meals = total * 17;
+    let weeks, note;
+    if (total === 1) {
+      weeks = 2; note = `~${meals} meals — you'll go through this in around 2 weeks`;
+    } else if (total === 2) {
+      weeks = 4; note = `~${meals} meals — a monthly delivery keeps you on track`;
+    } else if (total === 3) {
+      weeks = 6; note = `~${meals} meals — every 6 weeks is a comfortable fit`;
+    } else {
+      weeks = 8; note = `~${meals} meals — every 8 weeks keeps you well stocked`;
+    }
+    document.getElementById('plan-freq-callout').style.display = '';
+    document.getElementById('plan-freq-callout-text').textContent =
+      `Based on ${total} bag${total !== 1 ? 's' : ''}, we suggest every ${weeks} weeks — ${note}`;
+    setPlanFreq(weeks, null);
+
+    const defaultLabels = { 2: '2+ meals a day', 4: 'Around 1 meal a day', 6: '4–5 meals a week', 8: '2–3 meals a week' };
+    [2, 4, 6, 8].forEach(w => {
+      const el = document.getElementById('freq-note-' + w);
+      if (!el) return;
+      el.textContent = w === weeks ? `Best for ${total} bag${total !== 1 ? 's' : ''}` : defaultLabels[w];
+    });
+  }
+
+  function selectQuizOption(question, value, el) {
+    const multiSelect = question === 'q3';
+    if (multiSelect) {
+      if (!Array.isArray(quizAnswers[question])) quizAnswers[question] = [];
+      if (el.classList.contains('selected')) {
+        el.classList.remove('selected');
+        quizAnswers[question] = quizAnswers[question].filter(v => v !== value);
+      } else {
+        el.classList.add('selected');
+        quizAnswers[question].push(value);
+      }
+    } else {
+      quizAnswers[question] = value;
+      el.closest('.ob-options').querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+    const btn = document.getElementById(question + '-btn');
+    if (btn) {
+      const hasAnswer = multiSelect ? quizAnswers[question].length > 0 : !!quizAnswers[question];
+      btn.classList.toggle('ready', hasAnswer);
+    }
+  }
+
+  function setPlanFreq(weeks, el) {
+    planFreq = weeks;
+    document.querySelectorAll('.ob-freq-card').forEach(c => c.classList.remove('selected'));
+    if (el) {
+      el.classList.add('selected');
+    } else {
+      const cards = document.querySelectorAll('.ob-freq-card');
+      const map = { 2: 0, 4: 1, 6: 2, 8: 3 };
+      if (map[weeks] !== undefined) cards[map[weeks]].classList.add('selected');
+    }
+    updatePlanPrice();
+  }
+
+  function updatePlanPrice() {
+    const totalBags = planFlavours.reduce((s, f) => s + f.qty, 0);
+    const subtotal = BAG_PRICE * totalBags;
+    const discount = subtotal * 0.1;
+    const total = subtotal - discount;
+    document.getElementById('plan-subtotal').textContent = totalBags > 0 ? '£' + subtotal.toFixed(2) : '—';
+    document.getElementById('plan-discount').textContent = totalBags > 0 ? '-£' + discount.toFixed(2) : '—';
+    document.getElementById('plan-total').textContent = totalBags > 0 ? '£' + total.toFixed(2) : '—';
+  }
+
 
   let pendingAnimSlot = null;
   let loggedFromScreen = null;
@@ -1197,10 +1714,23 @@
   function showScreen(name) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + name).classList.add('active');
+    const isOnboarding = ONBOARDING_SCREENS.has(name);
+    document.querySelector('.bottom-nav').style.display = isOnboarding ? 'none' : '';
+    document.getElementById('log-fab').style.display = (!isOnboarding && FAB_SCREENS.has(name)) ? 'flex' : 'none';
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const navId = NAV_MAP[name];
     if (navId) document.getElementById(navId).classList.add('active');
-    document.getElementById('log-fab').style.display = FAB_SCREENS.has(name) ? 'flex' : 'none';
+    if (name === 'onboarding-processing') {
+      setTimeout(() => showScreen('onboarding-recommendation'), 2200);
+    }
+    if (name === 'onboarding-recommendation') {
+      const heading = document.getElementById('rec-heading');
+      if (heading) heading.textContent = userName ? `${userName}, we recommend` : 'We recommend';
+    }
+    if (name === 'onboarding-thankyou') {
+      const title = document.getElementById('thankyou-title');
+      if (title) title.textContent = userName ? `You're all set, ${userName}!` : 'You\'re all set!';
+    }
     if (name === 'subscriptions' && !subsInsightSeen) {
       subsInsightSeen = true;
       const dot = document.querySelector('#nav-subscriptions .nav-dot');
@@ -2263,6 +2793,8 @@
   renderHomeSubCard();
   renderReorderVarieties();
   renderLoyaltyScreen();
+  updateFreqRecommendation();
+  showScreen('onboarding-welcome');
 </script>
 </body>
 </html>

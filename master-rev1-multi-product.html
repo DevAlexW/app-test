@@ -126,12 +126,12 @@
     .home-loyalty-points { font-size: 30px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; line-height: 1; }
     .home-loyalty-pts-label { font-size: 13px; color: #6B6B6B; margin-top: 4px; margin-bottom: 18px; }
     .home-loyalty-btn { display: inline-flex; align-items: center; gap: 6px; background: #1C1C1E; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 20px; }
-    .home-refer-card { background: #fff; border: 1.5px solid #E5E5EA; border-radius: 16px; padding: 18px; margin-bottom: 16px; cursor: pointer; }
+    .home-refer-card { background: #fff; border: 1.5px solid #E5E5EA; border-radius: 16px; padding: 18px; margin-bottom: 100px; cursor: pointer; }
     .home-refer-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #AEAEB2; margin-bottom: 6px; }
     .home-refer-title { font-size: 17px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.3px; margin-bottom: 6px; }
     .home-refer-sub { font-size: 13px; color: #6B6B6B; line-height: 1.5; margin-bottom: 16px; }
     .home-refer-btn { display: inline-flex; align-items: center; gap: 6px; background: #1C1C1E; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 20px; }
-    .home-product-card { background: #fff; border: 1.5px solid #E5E5EA; border-radius: 16px; padding: 18px; margin-bottom: 100px; }
+    .home-product-card { background: #fff; border: 1.5px solid #E5E5EA; border-radius: 16px; padding: 18px; margin-bottom: 16px; }
     .home-product-badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: #1C1C1E; color: #fff; padding: 3px 9px; border-radius: 20px; margin-bottom: 10px; }
     .home-product-name { font-size: 16px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.3px; margin-bottom: 6px; }
     .home-product-desc { font-size: 13px; color: #6B6B6B; line-height: 1.5; margin-bottom: 14px; }
@@ -227,13 +227,20 @@
     .legend-label { font-size: 11px; color: #AEAEB2; }
     .section-divider { height: 1px; background: #F0F0F0; margin: 4px 0 24px; }
     .badges-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-    .badge-tile { background: #F5F2EC; border-radius: 16px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; cursor: pointer; transition: background 0.12s; }
+    .badge-tile { background: #F5F2EC; border-radius: 16px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; cursor: pointer; transition: background 0.12s; position: relative; }
     .badge-tile:hover { background: #EDE9E1; }
-    .badge-tile.locked { opacity: 0.35; cursor: default; }
-    .badge-tile.locked:hover { background: #F5F2EC; }
+    .badge-tile.locked { cursor: pointer; }
+    .badge-tile.locked:hover { background: #EDE9E1; }
+    .badge-tile.locked .badge-emoji-wrap,
+    .badge-tile.locked .badge-tile-name,
+    .badge-tile.locked .badge-tile-pts { opacity: 0.35; }
     .badge-emoji-wrap { width: 50px; height: 50px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; }
     .badge-tile-name { font-size: 11px; font-weight: 600; color: #1C1C1E; line-height: 1.3; }
     .badge-tile-status { font-size: 10px; color: #AEAEB2; }
+    .badge-tile-pts { font-size: 10px; font-weight: 600; }
+    .badge-tile-pts.pts-earned { color: #16A34A; }
+    .badge-tile-pts.pts-locked { color: #6B6B6B; }
+    .badge-tile-check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #16A34A; display: flex; align-items: center; justify-content: center; }
 
     /* ════════════════════════
        LOG SUCCESS
@@ -303,7 +310,8 @@
     .modal-badge-icon { width: 88px; height: 88px; border-radius: 50%; background: #FEF3C7; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; }
     .modal-earned-tag { font-size: 11px; font-weight: 700; color: #D97706; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
     .modal-badge-name { font-size: 26px; font-weight: 800; color: #1C1C1E; letter-spacing: -0.6px; margin-bottom: 8px; }
-    .modal-badge-desc { font-size: 14px; color: #AEAEB2; line-height: 1.6; margin-bottom: 28px; }
+    .modal-badge-desc { font-size: 14px; color: #AEAEB2; line-height: 1.6; margin-bottom: 12px; }
+    .modal-badge-pts { font-size: 13px; font-weight: 600; margin-bottom: 24px; }
 
     /* ════════════════════════
        LOG SHEET
@@ -793,6 +801,16 @@
       </div>
       <div id="home-sub-card" style="margin-bottom:16px"></div>
 
+      <div class="home-product-card">
+        <div class="home-product-badge">New</div>
+        <div class="home-product-name">Black Edition Ramen</div>
+        <div class="home-product-desc">A complete meal in minutes. 40g protein, just add hot water.</div>
+        <div style="display:flex;gap:10px">
+          <div class="home-product-btn" style="background:#1C1C1E;color:#fff;border-color:#1C1C1E">Add singles</div>
+          <div class="home-product-btn">Add a box</div>
+        </div>
+      </div>
+
       <div class="home-loyalty-card" onclick="showScreen('loyalty')">
         <div class="home-loyalty-eyebrow">Huel+</div>
         <div class="home-loyalty-points">100</div>
@@ -805,16 +823,6 @@
         <div class="home-refer-title">Gift friends £20 off Huel</div>
         <div class="home-refer-sub">Share your link and get £20 credit when a friend places their first order.</div>
         <div class="home-refer-btn">Share offer</div>
-      </div>
-
-      <div class="home-product-card">
-        <div class="home-product-badge">New</div>
-        <div class="home-product-name">Black Edition Ramen</div>
-        <div class="home-product-desc">A complete meal in minutes. 40g protein, just add hot water.</div>
-        <div style="display:flex;gap:10px">
-          <div class="home-product-btn" style="background:#1C1C1E;color:#fff;border-color:#1C1C1E">Add singles</div>
-          <div class="home-product-btn">Add a box</div>
-        </div>
       </div>
 
     </div>
@@ -852,9 +860,9 @@
       <div style="margin-top:16px">
         <div class="section-label">Recent badges</div>
         <div class="badges-row">
-          <div class="badge-chip" onclick="openBadgeModal('🌱','First Sip','You logged your very first Huel. The journey starts here.')"><span>🌱</span><span class="badge-chip-name">First Sip</span></div>
-          <div class="badge-chip" onclick="openBadgeModal('🐦','Early Bird','You logged breakfast 7 days in a row. Mornings are sorted.')"><span>🐦</span><span class="badge-chip-name">Early Bird</span></div>
-          <div class="badge-chip" onclick="openBadgeModal('⚡','Week Warrior','You logged every day this week. Total consistency.')"><span>⚡</span><span class="badge-chip-name">Week Warrior</span></div>
+          <div class="badge-chip" onclick="openBadgeModal('🌱','First Sip','You logged your very first Huel. The journey starts here.',10,true)"><span>🌱</span><span class="badge-chip-name">First Sip</span></div>
+          <div class="badge-chip" onclick="openBadgeModal('🐦','Early Bird','You logged breakfast 7 days in a row. Mornings are sorted.',25,true)"><span>🐦</span><span class="badge-chip-name">Early Bird</span></div>
+          <div class="badge-chip" onclick="openBadgeModal('⚡','Week Warrior','You logged every day this week. Total consistency.',50,true)"><span>⚡</span><span class="badge-chip-name">Week Warrior</span></div>
         </div>
       </div>
       <div class="view-history-row" onclick="showScreen('tracker-detail')" style="margin-top:12px;">
@@ -909,19 +917,22 @@
       <div class="section-divider"></div>
       <div class="section-label">Badges</div>
       <div class="badges-grid">
-        <div class="badge-tile" onclick="openBadgeModal('🌱','First Sip','You logged your very first Huel. The journey starts here.')">
-          <div class="badge-emoji-wrap">🌱</div><div class="badge-tile-name">First Sip</div><div class="badge-tile-status">Earned</div>
+        <div class="badge-tile" onclick="openBadgeModal('🌱','First Sip','You logged your very first Huel. The journey starts here.',10,true)">
+          <div class="badge-tile-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="badge-emoji-wrap">🌱</div><div class="badge-tile-name">First Sip</div><div class="badge-tile-pts pts-earned">10 pts earned</div>
         </div>
-        <div class="badge-tile" onclick="openBadgeModal('🐦','Early Bird','You logged breakfast 7 days in a row. Mornings are sorted.')">
-          <div class="badge-emoji-wrap">🐦</div><div class="badge-tile-name">Early Bird</div><div class="badge-tile-status">Earned</div>
+        <div class="badge-tile" onclick="openBadgeModal('🐦','Early Bird','You logged breakfast 7 days in a row. Mornings are sorted.',25,true)">
+          <div class="badge-tile-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="badge-emoji-wrap">🐦</div><div class="badge-tile-name">Early Bird</div><div class="badge-tile-pts pts-earned">25 pts earned</div>
         </div>
-        <div class="badge-tile" onclick="openBadgeModal('⚡','Week Warrior','You logged every day this week. Total consistency.')">
-          <div class="badge-emoji-wrap">⚡</div><div class="badge-tile-name">Week Warrior</div><div class="badge-tile-status">Earned</div>
+        <div class="badge-tile" onclick="openBadgeModal('⚡','Week Warrior','You logged every day this week. Total consistency.',50,true)">
+          <div class="badge-tile-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="badge-emoji-wrap">⚡</div><div class="badge-tile-name">Week Warrior</div><div class="badge-tile-pts pts-earned">50 pts earned</div>
         </div>
-        <div class="badge-tile locked"><div class="badge-emoji-wrap">🏆</div><div class="badge-tile-name">Lunch Time Hero</div><div class="badge-tile-status">9 / 14 lunches</div></div>
-        <div class="badge-tile locked"><div class="badge-emoji-wrap">🔥</div><div class="badge-tile-name">On Fire</div><div class="badge-tile-status">14 / 30 days</div></div>
-        <div class="badge-tile locked"><div class="badge-emoji-wrap">🌙</div><div class="badge-tile-name">Night Owl</div><div class="badge-tile-status">3 / 10 dinners</div></div>
-        <div class="badge-tile locked"><div class="badge-emoji-wrap">🎯</div><div class="badge-tile-name">The Consistent</div><div class="badge-tile-status">14 / 30 days</div></div>
+        <div class="badge-tile locked" onclick="openBadgeModal('🏆','Lunch Time Hero','Log a Huel at lunch 14 times.',40,false)"><div class="badge-emoji-wrap">🏆</div><div class="badge-tile-name">Lunch Time Hero</div><div class="badge-tile-status">9 / 14 lunches</div><div class="badge-tile-pts pts-locked">Earn 40 pts</div></div>
+        <div class="badge-tile locked" onclick="openBadgeModal('🔥','On Fire','Log every day for 30 days.',100,false)"><div class="badge-emoji-wrap">🔥</div><div class="badge-tile-name">On Fire</div><div class="badge-tile-status">14 / 30 days</div><div class="badge-tile-pts pts-locked">Earn 100 pts</div></div>
+        <div class="badge-tile locked" onclick="openBadgeModal('🌙','Night Owl','Log a Huel at dinner 10 times.',30,false)"><div class="badge-emoji-wrap">🌙</div><div class="badge-tile-name">Night Owl</div><div class="badge-tile-status">3 / 10 dinners</div><div class="badge-tile-pts pts-locked">Earn 30 pts</div></div>
+        <div class="badge-tile locked" onclick="openBadgeModal('🎯','The Consistent','Log every day for 30 days.',75,false)"><div class="badge-emoji-wrap">🎯</div><div class="badge-tile-name">The Consistent</div><div class="badge-tile-status">14 / 30 days</div><div class="badge-tile-pts pts-locked">Earn 75 pts</div></div>
       </div>
     </div>
   </div>
@@ -1291,6 +1302,7 @@
       <div class="modal-earned-tag">Badge unlocked!</div>
       <div class="modal-badge-name" id="modal-name"></div>
       <div class="modal-badge-desc" id="modal-desc"></div>
+      <div class="modal-badge-pts" id="modal-pts"></div>
       <button class="cta" onclick="closeBadgeModal()">Awesome! 🎉</button>
     </div>
   </div>
@@ -1731,10 +1743,14 @@
     renderMeals();
   }
 
-  function openBadgeModal(emoji, name, desc) {
+  function openBadgeModal(emoji, name, desc, pts, earned) {
     document.getElementById('modal-emoji').textContent = emoji;
     document.getElementById('modal-name').textContent = name;
     document.getElementById('modal-desc').textContent = desc;
+    const ptsEl = document.getElementById('modal-pts');
+    ptsEl.textContent = earned ? `${pts} pts earned` : `Earn ${pts} pts`;
+    ptsEl.style.color = earned ? '#16A34A' : '#AEAEB2';
+    document.querySelector('.modal-earned-tag').style.display = earned ? '' : 'none';
     document.getElementById('badge-modal').classList.add('visible');
   }
   function closeBadgeModal() { document.getElementById('badge-modal').classList.remove('visible'); }
